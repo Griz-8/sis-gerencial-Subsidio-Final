@@ -24,6 +24,9 @@
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -51,7 +54,13 @@
 				"          centro_destino = iif(replace(lower(centro_destino), ' ', '') == 'centroodistri', 'Centro Distribución', initCap(trim(centro_destino))),",
 				"          estado = iif(rlike(estado, '(?i)tr.*nsito'), 'En Tránsito', iif(rlike(estado, '(?i)deespachado'), 'Despachado', initCap(trim(estado)))),",
 				"          responsable = initCap(regexReplace(trim(responsable), '\\\\s+', ' '))) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 aggregate(groupBy(despacho_id),",
+				"     fecha_despacho = first(fecha_despacho),",
+				"          cantidad_despachada = first(cantidad_despachada),",
+				"          centro_destino = first(centro_destino),",
+				"          estado = first(estado),",
+				"          column1responsable = first(responsable)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          despacho_id as integer,",
