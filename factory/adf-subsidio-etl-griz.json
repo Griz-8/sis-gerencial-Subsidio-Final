@@ -1,0 +1,10 @@
+{
+	"name": "adf-subsidio-etl-griz",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "southcentralus"
+}

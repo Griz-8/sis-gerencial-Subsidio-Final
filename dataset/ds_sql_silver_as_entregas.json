@@ -1,0 +1,64 @@
+{
+	"name": "ds_sql_silver_as_entregas",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "entrega_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "boleta_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ci_beneficiaria",
+				"type": "varchar"
+			},
+			{
+				"name": "establecimiento_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "paquete_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "paquete_nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "fecha_entrega",
+				"type": "date"
+			},
+			{
+				"name": "lote_produccion",
+				"type": "varchar"
+			},
+			{
+				"name": "peso_paquete_kg",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "fecha_proxima_entrega",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "as_entregas"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

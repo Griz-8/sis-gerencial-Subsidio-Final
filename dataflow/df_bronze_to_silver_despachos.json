@@ -1,0 +1,83 @@
+{
+	"name": "df_bronze_to_silver_despachos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_csv_as_despachos",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_despachos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          despacho_id as string,",
+				"          recepcion_id as string,",
+				"          nro_lote as string,",
+				"          almacen_id as string,",
+				"          transportista_id as string,",
+				"          vehiculo_id as string,",
+				"          fecha_despacho as string,",
+				"          cantidad_despachada as string,",
+				"          centro_destino as string,",
+				"          estado as string,",
+				"          responsable as string,",
+				"          nro_guia_despacho as string,",
+				"          fecha_llegada as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(despacho_id = toInteger(despacho_id),",
+				"          fecha_despacho = iif(instr(fecha_despacho, '/') > 0, toDate(fecha_despacho, 'dd/MM/yyyy'), iif(instr(fecha_despacho, '-') == 3, toDate(fecha_despacho, 'dd-MM-yyyy'), toDate(fecha_despacho, 'yyyy-MM-dd'))),",
+				"          cantidad_despachada = toInteger(cantidad_despachada),",
+				"          centro_destino = iif(replace(lower(centro_destino), ' ', '') == 'centroodistri', 'Centro Distribución', initCap(trim(centro_destino))),",
+				"          estado = iif(rlike(estado, '(?i)tr.*nsito'), 'En Tránsito', iif(rlike(estado, '(?i)deespachado'), 'Despachado', initCap(trim(estado)))),",
+				"          responsable = initCap(regexReplace(trim(responsable), '\\\\s+', ' '))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          despacho_id as integer,",
+				"          nro_lote as string,",
+				"          fecha_despacho as date,",
+				"          cantidad_despachada as integer,",
+				"          centro_destino as string,",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          despacho_id,",
+				"          nro_lote,",
+				"          fecha_despacho,",
+				"          cantidad_despachada,",
+				"          centro_destino,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

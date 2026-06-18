@@ -1,0 +1,17 @@
+{
+	"name": "ds_sql_bronze_as_despachos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": "as_despachos"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

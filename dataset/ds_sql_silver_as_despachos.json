@@ -1,0 +1,44 @@
+{
+	"name": "ds_sql_silver_as_despachos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "despacho_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nro_lote",
+				"type": "varchar"
+			},
+			{
+				"name": "fecha_despacho",
+				"type": "date"
+			},
+			{
+				"name": "cantidad_despachada",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "centro_destino",
+				"type": "varchar"
+			},
+			{
+				"name": "estado",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "as_despachos"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

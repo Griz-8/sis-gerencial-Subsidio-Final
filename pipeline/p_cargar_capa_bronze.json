@@ -1,0 +1,619 @@
+{
+	"name": "p_cargar_capa_bronze",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_SEGIP",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CI",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ci",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Nombres",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "nombre",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Ap. Paterno",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "paterno",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Ap. Materno",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "materno",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Fecha Nac.",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "fecha_nacimiento",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Género",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "genero",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Estado Civil",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "estado_civil",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_csv_segip",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sql_bronze_segip",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_SUP_Boletas",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_SEGIP",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "boleta_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "boleta_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "control_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "control_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ci_beneficiaria",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ci_beneficiaria",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "nro_boleta",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "nro_boleta",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "fecha_emision",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "fecha_emision",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "estado",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "estado",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_csv_sup_boletas",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sql_bronze_sup_boletas",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_SUP_Entregas",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_SUP_Boletas",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id_entrega",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "id_entrega",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "id_boleta",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "id_boleta",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "fecha_entrega",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "fecha_entrega",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "codigo_producto",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "codigo_producto",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "cantidad",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "cantidad",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_sql_bronze_sup_entregas",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_csv_sup_entregas",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy_AS_Despachos",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_SUP_Entregas",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "despacho_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "despacho_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "recepcion_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "recepcion_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "nro_lote",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "nro_lote",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "almacen_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "almacen_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "transportista_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "transportista_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "vehiculo_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "vehiculo_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "fecha_despacho",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "fecha_despacho",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "cantidad_despachada",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "cantidad_despachada",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "centro_destino",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "centro_destino",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "estado",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "estado",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "responsable",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "responsable",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "nro_guia_despacho",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "nro_guia_despacho",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "fecha_llegada",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "fecha_llegada",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_csv_as_despachos",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sql_bronze_as_despachos",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-06-18T22:31:19Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
