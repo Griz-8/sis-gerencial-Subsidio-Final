@@ -1,0 +1,1789 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-subsidio-etl-griz"
+		},
+		"ls_azure_sql_dw_dest_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_azure_sql_dw_dest'"
+		},
+		"ls_source_csv_blobs_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_source_csv_blobs'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/p_cargar_capa_bronze')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_SEGIP",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "CI",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ci",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Nombres",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "nombre",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Ap. Paterno",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "paterno",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Ap. Materno",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "materno",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Fecha Nac.",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fecha_nacimiento",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Género",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "genero",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Estado Civil",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "estado_civil",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_csv_segip",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_bronze_segip",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy_SUP_Boletas",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy_SEGIP",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "boleta_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "boleta_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "control_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "control_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ci_beneficiaria",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ci_beneficiaria",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "nro_boleta",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "nro_boleta",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "fecha_emision",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fecha_emision",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "estado",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "estado",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_csv_sup_boletas",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_bronze_sup_boletas",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy_SUP_Entregas",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy_SUP_Boletas",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id_entrega",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "id_entrega",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "id_boleta",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "id_boleta",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "fecha_entrega",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "fecha_entrega",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "codigo_producto",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "codigo_producto",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "cantidad",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "cantidad",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sql_bronze_sup_entregas",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_csv_sup_entregas",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy_AS_Despachos",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy_SUP_Entregas",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "despacho_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "despacho_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "recepcion_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "recepcion_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "nro_lote",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "nro_lote",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "almacen_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "almacen_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "transportista_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "transportista_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "vehiculo_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "vehiculo_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "fecha_despacho",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fecha_despacho",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "cantidad_despachada",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "cantidad_despachada",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "centro_destino",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "centro_destino",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "estado",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "estado",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "responsable",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "responsable",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "nro_guia_despacho",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "nro_guia_despacho",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "fecha_llegada",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fecha_llegada",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_csv_as_despachos",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_bronze_as_despachos",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-06-18T22:31:19Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_segip')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_segip')]",
+				"[concat(variables('factoryId'), '/datasets/ds_csv_sup_boletas')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_sup_boletas')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_sup_entregas')]",
+				"[concat(variables('factoryId'), '/datasets/ds_csv_sup_entregas')]",
+				"[concat(variables('factoryId'), '/datasets/ds_csv_as_despachos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_as_despachos')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/p_cargar_capa_silver')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Limpiar Entregas",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_to_silver_entregas",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"GuardarEnSilverEntregas": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Limpiar Boletas",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_to_silver_boletas",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Limpiar Despachos",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_to_silver_despachos",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Limpiar Segip",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_to_silver_segip",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-06-18T23:07:42Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_entregas')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_boletas')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_despachos')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_segip')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_as_despachos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_source_csv_blobs",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "as_despachos.csv",
+						"folderPath": "AS",
+						"container": "subsidio-raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "despacho_id",
+						"type": "String"
+					},
+					{
+						"name": "recepcion_id",
+						"type": "String"
+					},
+					{
+						"name": "nro_lote",
+						"type": "String"
+					},
+					{
+						"name": "almacen_id",
+						"type": "String"
+					},
+					{
+						"name": "transportista_id",
+						"type": "String"
+					},
+					{
+						"name": "vehiculo_id",
+						"type": "String"
+					},
+					{
+						"name": "fecha_despacho",
+						"type": "String"
+					},
+					{
+						"name": "cantidad_despachada",
+						"type": "String"
+					},
+					{
+						"name": "centro_destino",
+						"type": "String"
+					},
+					{
+						"name": "estado",
+						"type": "String"
+					},
+					{
+						"name": "responsable",
+						"type": "String"
+					},
+					{
+						"name": "nro_guia_despacho",
+						"type": "String"
+					},
+					{
+						"name": "fecha_llegada",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_source_csv_blobs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_segip')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_source_csv_blobs",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "segip.csv",
+						"folderPath": "SEGIP",
+						"container": "subsidio-raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CI",
+						"type": "String"
+					},
+					{
+						"name": "Nombres",
+						"type": "String"
+					},
+					{
+						"name": "Ap. Paterno",
+						"type": "String"
+					},
+					{
+						"name": "Ap. Materno",
+						"type": "String"
+					},
+					{
+						"name": "Fecha Nac.",
+						"type": "String"
+					},
+					{
+						"name": "Género",
+						"type": "String"
+					},
+					{
+						"name": "Estado Civil",
+						"type": "String"
+					},
+					{
+						"name": "Municipio",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_source_csv_blobs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_sup_boletas')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_source_csv_blobs",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "sup_boletas.csv",
+						"folderPath": "SUP",
+						"container": "subsidio-raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "boleta_id",
+						"type": "String"
+					},
+					{
+						"name": "control_id",
+						"type": "String"
+					},
+					{
+						"name": "ci_beneficiaria",
+						"type": "String"
+					},
+					{
+						"name": "nro_boleta",
+						"type": "String"
+					},
+					{
+						"name": "fecha_emision",
+						"type": "String"
+					},
+					{
+						"name": "estado",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_source_csv_blobs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_csv_sup_entregas')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_source_csv_blobs",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "sup_entregas.csv",
+						"folderPath": "SUP",
+						"container": "subsidio-raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "entrega_id",
+						"type": "String"
+					},
+					{
+						"name": "boleta_id",
+						"type": "String"
+					},
+					{
+						"name": "ci_beneficiaria",
+						"type": "String"
+					},
+					{
+						"name": "establecimiento_id",
+						"type": "String"
+					},
+					{
+						"name": "paquete_id",
+						"type": "String"
+					},
+					{
+						"name": "paquete_nombre",
+						"type": "String"
+					},
+					{
+						"name": "fecha_entrega",
+						"type": "String"
+					},
+					{
+						"name": "lote_produccion",
+						"type": "String"
+					},
+					{
+						"name": "peso_paquete_kg",
+						"type": "String"
+					},
+					{
+						"name": "fecha_proxima_entrega",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_source_csv_blobs')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_bronze_as_despachos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "as_despachos"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_bronze_segip')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "segip"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_bronze_sup_boletas')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "sup_boletas"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_bronze_sup_entregas')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "sup_entregas"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_as_despachos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "despacho_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nro_lote",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_despacho",
+						"type": "date"
+					},
+					{
+						"name": "cantidad_despachada",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "centro_destino",
+						"type": "varchar"
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "as_despachos"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_as_entregas')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "entrega_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "boleta_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ci_beneficiaria",
+						"type": "varchar"
+					},
+					{
+						"name": "establecimiento_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "paquete_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "paquete_nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_entrega",
+						"type": "date"
+					},
+					{
+						"name": "lote_produccion",
+						"type": "varchar"
+					},
+					{
+						"name": "peso_paquete_kg",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "fecha_proxima_entrega",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "as_entregas"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_segip')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ci",
+						"type": "varchar"
+					},
+					{
+						"name": "nombres",
+						"type": "varchar"
+					},
+					{
+						"name": "apellido_paterno",
+						"type": "varchar"
+					},
+					{
+						"name": "apellido_materno",
+						"type": "varchar"
+					},
+					{
+						"name": "nombre_completo",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_nacimiento",
+						"type": "date"
+					},
+					{
+						"name": "genero",
+						"type": "varchar"
+					},
+					{
+						"name": "estado_civil",
+						"type": "varchar"
+					},
+					{
+						"name": "municipio",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "segip_ciudadanos"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_sup_boletas')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "boleta_id",
+						"type": "varchar"
+					},
+					{
+						"name": "control_id",
+						"type": "varchar"
+					},
+					{
+						"name": "ci_beneficiaria",
+						"type": "varchar"
+					},
+					{
+						"name": "nro_boleta",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_emision",
+						"type": "varchar"
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "sup_boletas"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azure_sql_dw_dest')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_azure_sql_dw_dest')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_azure_sql_dw_dest_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_source_csv_blobs')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_source_csv_blobs_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_boletas')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_sup_boletas",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_sup_boletas",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "LimpiarDatos"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          boleta_id as string,",
+						"          control_id as string,",
+						"          ci_beneficiaria as string,",
+						"          nro_boleta as string,",
+						"          fecha_emision as string,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive(ci_beneficiaria = upper(     iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'),         concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 3, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, 2)),         iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'),             concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', right(regexReplace(ci_beneficiaria, '[-_]', ''), 2)),             regexReplace(ci_beneficiaria, '[-_]', '')         )     ) ),",
+						"          fecha_emision = iif(instr(fecha_emision, '/') > 0,      toDate(fecha_emision, 'dd/MM/yyyy'),      iif(instr(fecha_emision, '-') == 3,          toDate(fecha_emision, 'dd-MM-yyyy'),          toDate(fecha_emision, 'yyyy-MM-dd')     ) ),",
+						"          estado = initCap(trim(estado))) ~> LimpiarDatos",
+						"LimpiarDatos sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          boleta_id as string,",
+						"          control_id as string,",
+						"          ci_beneficiaria as string,",
+						"          nro_boleta as string,",
+						"          fecha_emision as string,",
+						"          estado as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          boleta_id,",
+						"          control_id,",
+						"          ci_beneficiaria,",
+						"          nro_boleta,",
+						"          fecha_emision,",
+						"          estado",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_sup_boletas')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_sup_boletas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_despachos')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_as_despachos",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_as_despachos",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          despacho_id as string,",
+						"          recepcion_id as string,",
+						"          nro_lote as string,",
+						"          almacen_id as string,",
+						"          transportista_id as string,",
+						"          vehiculo_id as string,",
+						"          fecha_despacho as string,",
+						"          cantidad_despachada as string,",
+						"          centro_destino as string,",
+						"          estado as string,",
+						"          responsable as string,",
+						"          nro_guia_despacho as string,",
+						"          fecha_llegada as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive(despacho_id = toInteger(despacho_id),",
+						"          fecha_despacho = iif(instr(fecha_despacho, '/') > 0, toDate(fecha_despacho, 'dd/MM/yyyy'), iif(instr(fecha_despacho, '-') == 3, toDate(fecha_despacho, 'dd-MM-yyyy'), toDate(fecha_despacho, 'yyyy-MM-dd'))),",
+						"          cantidad_despachada = toInteger(cantidad_despachada),",
+						"          centro_destino = iif(replace(lower(centro_destino), ' ', '') == 'centroodistri', 'Centro Distribución', initCap(trim(centro_destino))),",
+						"          estado = iif(rlike(estado, '(?i)tr.*nsito'), 'En Tránsito', iif(rlike(estado, '(?i)deespachado'), 'Despachado', initCap(trim(estado)))),",
+						"          responsable = initCap(regexReplace(trim(responsable), '\\\\s+', ' '))) ~> derivedColumn1",
+						"derivedColumn1 aggregate(groupBy(despacho_id),",
+						"     fecha_despacho = first(fecha_despacho),",
+						"          cantidad_despachada = first(cantidad_despachada),",
+						"          centro_destino = first(centro_destino),",
+						"          estado = first(estado),",
+						"          responsable = first(responsable),",
+						"          nro_lote = first(nro_lote)) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          despacho_id as integer,",
+						"          nro_lote as string,",
+						"          fecha_despacho as date,",
+						"          cantidad_despachada as integer,",
+						"          centro_destino as string,",
+						"          estado as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          despacho_id,",
+						"          nro_lote,",
+						"          fecha_despacho,",
+						"          cantidad_despachada,",
+						"          centro_destino,",
+						"          estado",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_as_despachos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_as_despachos')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_entregas')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_sup_entregas",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_as_entregas",
+								"type": "DatasetReference"
+							},
+							"name": "GuardarEnSilverEntregas"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          entrega_id as string,",
+						"          boleta_id as string,",
+						"          ci_beneficiaria as string,",
+						"          establecimiento_id as string,",
+						"          paquete_id as string,",
+						"          paquete_nombre as string,",
+						"          fecha_entrega as string,",
+						"          lote_produccion as string,",
+						"          peso_paquete_kg as string,",
+						"          fecha_proxima_entrega as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive(entrega_id = toInteger(entrega_id),",
+						"          boleta_id = toInteger(boleta_id),",
+						"          ci_beneficiaria = upper(iif(rlike(regexReplace(ci_beneficiaria, '[-_ ]', ''), '^[A-Za-z]{2}\\\\d+'), concat(substring(regexReplace(ci_beneficiaria, '[-_ ]', ''), 3, length(regexReplace(ci_beneficiaria, '[-_ ]', ''))-2), '-', substring(regexReplace(ci_beneficiaria, '[-_ ]', ''), 1, 2)), iif(rlike(regexReplace(ci_beneficiaria, '[-_ ]', ''), '\\\\d+[A-Za-z]{2}$'), concat(substring(regexReplace(ci_beneficiaria, '[-_ ]', ''), 1, length(regexReplace(ci_beneficiaria, '[-_ ]', ''))-2), '-', right(regexReplace(ci_beneficiaria, '[-_ ]', ''), 2)), regexReplace(ci_beneficiaria, '[-_ ]', '')))),",
+						"          establecimiento_id = toInteger(establecimiento_id),",
+						"          paquete_id = toInteger(paquete_id),",
+						"          paquete_nombre = initCap(trim(paquete_nombre)),",
+						"          fecha_entrega = iif(!isNull(toDate(fecha_entrega, 'yyyy-MM-dd')), toDate(fecha_entrega, 'yyyy-MM-dd'), iif(!isNull(toDate(fecha_entrega, 'dd-MM-yyyy')), toDate(fecha_entrega, 'dd-MM-yyyy'), iif(!isNull(toDate(fecha_entrega, 'dd/MM/yyyy')), toDate(fecha_entrega, 'dd/MM/yyyy'), toDate(fecha_entrega, 'MM/dd/yyyy')))),",
+						"          lote_produccion = iif(isNull(lote_produccion) || trim(lote_produccion) == '', 'Sin Lote', upper(trim(lote_produccion))),",
+						"          peso_paquete_kg = iif(isNull(peso_paquete_kg) || trim(peso_paquete_kg) == '', toDecimal(0.0, 10, 2), toDecimal(peso_paquete_kg, 10, 2)),",
+						"          fecha_proxima_entrega = iif(isNull(fecha_proxima_entrega) || trim(fecha_proxima_entrega) == '', toDate(null()), iif(!isNull(toDate(fecha_proxima_entrega, 'yyyy-MM-dd')), toDate(fecha_proxima_entrega, 'yyyy-MM-dd'), iif(!isNull(toDate(fecha_proxima_entrega, 'dd-MM-yyyy')), toDate(fecha_proxima_entrega, 'dd-MM-yyyy'), iif(!isNull(toDate(fecha_proxima_entrega, 'dd/MM/yyyy')), toDate(fecha_proxima_entrega, 'dd/MM/yyyy'), toDate(fecha_proxima_entrega, 'MM/dd/yyyy')))))) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          entrega_id as integer,",
+						"          boleta_id as integer,",
+						"          ci_beneficiaria as string,",
+						"          establecimiento_id as integer,",
+						"          paquete_id as integer,",
+						"          paquete_nombre as string,",
+						"          fecha_entrega as date,",
+						"          lote_produccion as string,",
+						"          peso_paquete_kg as decimal(10,2),",
+						"          fecha_proxima_entrega as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          entrega_id,",
+						"          boleta_id,",
+						"          ci_beneficiaria,",
+						"          establecimiento_id,",
+						"          paquete_id,",
+						"          paquete_nombre,",
+						"          fecha_entrega,",
+						"          lote_produccion,",
+						"          peso_paquete_kg,",
+						"          fecha_proxima_entrega",
+						"     )) ~> GuardarEnSilverEntregas"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_sup_entregas')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_as_entregas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_segip')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_segip",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_segip",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CI as string,",
+						"          Nombres as string,",
+						"          {Ap. Paterno} as string,",
+						"          {Ap. Materno} as string,",
+						"          {Fecha Nac.} as string,",
+						"          {Género} as string,",
+						"          {Estado Civil} as string,",
+						"          Municipio as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"select1 derive(ci = upper(iif(rlike(regexReplace(ci, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'), concat(substring(regexReplace(ci, '[-_]', ''), 3, length(regexReplace(ci, '[-_]', ''))-2), '-', substring(regexReplace(ci, '[-_]', ''), 1, 2)), iif(rlike(regexReplace(ci, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'), concat(substring(regexReplace(ci, '[-_]', ''), 1, length(regexReplace(ci, '[-_]', ''))-2), '-', right(regexReplace(ci, '[-_]', ''), 2)), regexReplace(ci, '[-_]', '')))),",
+						"          nombres = initCap(trim(nombres)),",
+						"          apellido_paterno = iif(isNull(apellido_paterno) || trim(apellido_paterno) == '', '', initCap(trim(apellido_paterno))),",
+						"          apellido_materno = iif(isNull(apellido_materno) || trim(apellido_materno) == '', '', initCap(trim(apellido_materno))),",
+						"          nombre_completo = initCap(trim(concat(nombres, ' ', iif(isNull(apellido_paterno), '', apellido_paterno), ' ', iif(isNull(apellido_materno), '', apellido_materno)))),",
+						"          fecha_nacimiento = iif(instr(fecha_nacimiento, '/') > 0, toDate(fecha_nacimiento, 'dd/MM/yyyy'), iif(instr(fecha_nacimiento, '-') == 3, toDate(fecha_nacimiento, 'dd-MM-yyyy'), toDate(fecha_nacimiento, 'yyyy-MM-dd'))),",
+						"          genero = initCap(trim(genero)),",
+						"          estado_civil = initCap(trim(estado_civil)),",
+						"          municipio = initCap(trim(municipio))) ~> derivedColumn2",
+						"source1 select(mapColumn(",
+						"          ci = CI,",
+						"          nombres = Nombres,",
+						"          apellido_paterno = {Ap. Paterno},",
+						"          apellido_materno = {Ap. Materno},",
+						"          fecha_nacimiento = {Fecha Nac.},",
+						"          genero = {Género},",
+						"          estado_civil = {Estado Civil},",
+						"          municipio = Municipio",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ci as string,",
+						"          nombres as string,",
+						"          apellido_paterno as string,",
+						"          apellido_materno as string,",
+						"          nombre_completo as string,",
+						"          fecha_nacimiento as date,",
+						"          genero as string,",
+						"          estado_civil as string,",
+						"          municipio as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ci,",
+						"          nombres,",
+						"          apellido_paterno,",
+						"          apellido_materno,",
+						"          nombre_completo,",
+						"          fecha_nacimiento,",
+						"          genero,",
+						"          estado_civil,",
+						"          municipio",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_csv_segip')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_segip')]"
+			]
+		}
+	]
+}
