@@ -143,14 +143,7 @@
 			{
 				"name": "Copy_SUP_Boletas",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy_SEGIP",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -276,14 +269,7 @@
 			{
 				"name": "Copy_SUP_Entregas",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy_SUP_Boletas",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -397,14 +383,7 @@
 			{
 				"name": "Copy_AS_Despachos",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy_SUP_Entregas",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
