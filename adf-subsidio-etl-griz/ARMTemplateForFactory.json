@@ -169,14 +169,7 @@
 					{
 						"name": "Copy_SUP_Boletas",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy_SEGIP",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -302,139 +295,9 @@
 						]
 					},
 					{
-						"name": "Copy_SUP_Entregas",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy_SUP_Boletas",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "id_entrega",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "id_entrega",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "id_boleta",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "id_boleta",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "fecha_entrega",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "fecha_entrega",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "codigo_producto",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "codigo_producto",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "cantidad",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "cantidad",
-											"type": "String",
-											"physicalType": "String"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_sql_bronze_sup_entregas",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_csv_sup_entregas",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
 						"name": "Copy_AS_Despachos",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy_SUP_Entregas",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -642,6 +505,182 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Copy_SUP_Entregas2",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "entrega_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "entrega_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "boleta_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "boleta_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ci_beneficiaria",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ci_beneficiaria",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "establecimiento_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "establecimiento_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "paquete_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "paquete_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "paquete_nombre",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "paquete_nombre",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "fecha_entrega",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fecha_entrega",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "lote_produccion",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "lote_produccion",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "peso_paquete_kg",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "peso_paquete_kg",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "fecha_proxima_entrega",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fecha_proxima_entrega",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_csv_sup_entregas",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_bronze_sup_entregas",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -655,10 +694,10 @@
 				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_segip')]",
 				"[concat(variables('factoryId'), '/datasets/ds_csv_sup_boletas')]",
 				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_sup_boletas')]",
-				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_sup_entregas')]",
-				"[concat(variables('factoryId'), '/datasets/ds_csv_sup_entregas')]",
 				"[concat(variables('factoryId'), '/datasets/ds_csv_as_despachos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_as_despachos')]"
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_as_despachos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_csv_sup_entregas')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_sup_entregas')]"
 			]
 		},
 		{
@@ -772,6 +811,36 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "df_bronze_to_silver_segip",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Limpiar Boletas2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_to_silver_boletas",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -1143,7 +1212,48 @@
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
-				"schema": [],
+				"schema": [
+					{
+						"name": "entrega_id",
+						"type": "varchar"
+					},
+					{
+						"name": "boleta_id",
+						"type": "varchar"
+					},
+					{
+						"name": "ci_beneficiaria",
+						"type": "varchar"
+					},
+					{
+						"name": "establecimiento_id",
+						"type": "varchar"
+					},
+					{
+						"name": "paquete_id",
+						"type": "varchar"
+					},
+					{
+						"name": "paquete_nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_entrega",
+						"type": "varchar"
+					},
+					{
+						"name": "lote_produccion",
+						"type": "varchar"
+					},
+					{
+						"name": "peso_paquete_kg",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_proxima_entrega",
+						"type": "varchar"
+					}
+				],
 				"typeProperties": {
 					"schema": "bronze",
 					"table": "sup_entregas"
@@ -1442,8 +1552,8 @@
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> source1",
 						"source1 derive(ci_beneficiaria = upper(     iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'),         concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 3, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, 2)),         iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'),             concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', right(regexReplace(ci_beneficiaria, '[-_]', ''), 2)),             regexReplace(ci_beneficiaria, '[-_]', '')         )     ) ),",
-						"          fecha_emision = iif(instr(fecha_emision, '/') > 0,      toDate(fecha_emision, 'dd/MM/yyyy'),      iif(instr(fecha_emision, '-') == 3,          toDate(fecha_emision, 'dd-MM-yyyy'),          toDate(fecha_emision, 'yyyy-MM-dd')     ) ),",
-						"          estado = initCap(trim(estado))) ~> LimpiarDatos",
+						"          estado = initCap(trim(estado)),",
+						"          fecha_emision = toString(     iif(isNull(fecha_emision) || trim(fecha_emision) == '', toDate(null()),          iif(instr(fecha_emision, '/') > 0, toDate(fecha_emision, 'dd/MM/yyyy'),              iif(instr(fecha_emision, '-') == 3, toDate(fecha_emision, 'dd-MM-yyyy'),                  toDate(fecha_emision, 'yyyy-MM-dd')             )         )     ),      'yyyy-MM-dd' )) ~> LimpiarDatos",
 						"LimpiarDatos sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
