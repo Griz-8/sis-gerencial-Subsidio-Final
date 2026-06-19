@@ -707,66 +707,6 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Limpiar Entregas",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_bronze_to_silver_entregas",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"GuardarEnSilverEntregas": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "Limpiar Boletas",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_bronze_to_silver_boletas",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
 						"name": "Limpiar Despachos",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
@@ -855,6 +795,36 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Limpiar Entregas",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_to_silver_entregas",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"GuardarEnSilverEntregas": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -864,10 +834,10 @@
 				"lastPublishTime": "2026-06-18T23:07:42Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_entregas')]",
-				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_boletas')]",
 				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_despachos')]",
-				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_segip')]"
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_segip')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_boletas')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_to_silver_entregas')]"
 			]
 		},
 		{
