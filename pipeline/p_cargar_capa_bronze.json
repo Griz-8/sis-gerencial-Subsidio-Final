@@ -511,156 +511,120 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "despacho_id",
+									"name": "entrega_id",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "despacho_id",
+									"name": "entrega_id",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "recepcion_id",
+									"name": "boleta_id",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "recepcion_id",
+									"name": "boleta_id",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "nro_lote",
+									"name": "ci_beneficiaria",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "nro_lote",
+									"name": "ci_beneficiaria",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "almacen_id",
+									"name": "establecimiento_id",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "almacen_id",
+									"name": "establecimiento_id",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "transportista_id",
+									"name": "paquete_id",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "transportista_id",
+									"name": "paquete_id",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "vehiculo_id",
+									"name": "paquete_nombre",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "vehiculo_id",
+									"name": "paquete_nombre",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "fecha_despacho",
+									"name": "fecha_entrega",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "fecha_despacho",
+									"name": "fecha_entrega",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "cantidad_despachada",
+									"name": "lote_produccion",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "cantidad_despachada",
+									"name": "lote_produccion",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "centro_destino",
+									"name": "peso_paquete_kg",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "centro_destino",
+									"name": "peso_paquete_kg",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "estado",
+									"name": "fecha_proxima_entrega",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "estado",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "responsable",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "responsable",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "nro_guia_despacho",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "nro_guia_despacho",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "fecha_llegada",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "fecha_llegada",
+									"name": "fecha_proxima_entrega",
 									"type": "String",
 									"physicalType": "varchar"
 								}
