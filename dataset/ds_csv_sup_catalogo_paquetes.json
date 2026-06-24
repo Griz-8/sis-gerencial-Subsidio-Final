@@ -1,0 +1,45 @@
+{
+	"name": "ds_csv_sup_catalogo_paquetes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_source_csv_blobs",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "sup_catalogo-paquetes.csv",
+				"folderPath": "SUP",
+				"container": "subsidio-raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "paquete_id",
+				"type": "String"
+			},
+			{
+				"name": "nombre",
+				"type": "String"
+			},
+			{
+				"name": "contenido",
+				"type": "String"
+			},
+			{
+				"name": "peso_estandar_kg",
+				"type": "String"
+			},
+			{
+				"name": "costo_estimado_bs",
+				"type": "String"
+			}
+		]
+	}
+}
