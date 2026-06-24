@@ -651,7 +651,7 @@
 				]
 			},
 			{
-				"name": "Copy_SUP_Entregas2_copy1",
+				"name": "Copy_SUP_Catalogo_Paquetes",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -813,13 +813,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_csv_sup_entregas",
+						"referenceName": "ds_csv_sup_catalogo_paquetes",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_sql_bronze_sup_entregas",
+						"referenceName": "ds_sql_bronze_as_despachos",
 						"type": "DatasetReference"
 					}
 				]
