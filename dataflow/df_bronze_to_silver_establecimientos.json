@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_bronze_sup_establecimientos",
+						"referenceName": "ds_sql_silver_sup_establecimientos",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -53,17 +53,6 @@
 				"          fecha_procesamiento = currentTimestamp()) ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          establecimiento_id as string,",
-				"          codigo_snis as string,",
-				"          nombre as string,",
-				"          tipo as string,",
-				"          {nivel_de_atención} as string,",
-				"          municipio as string,",
-				"          departamento as string,",
-				"          red_salud as string,",
-				"          estado as string",
-				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
