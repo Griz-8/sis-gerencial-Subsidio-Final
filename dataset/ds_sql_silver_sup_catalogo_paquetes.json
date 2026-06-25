@@ -34,7 +34,7 @@
 			}
 		],
 		"typeProperties": {
-			"tableName": "[silver].[dim_paquete]"
+			"tableName": "[silver].[sup_paquetes]"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
