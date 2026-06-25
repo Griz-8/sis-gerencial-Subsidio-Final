@@ -685,54 +685,6 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "entrega_id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "entrega_id",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "boleta_id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "boleta_id",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "ci_beneficiaria",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "ci_beneficiaria",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "establecimiento_id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "establecimiento_id",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
 									"name": "paquete_id",
 									"type": "String",
 									"physicalType": "String"
@@ -745,60 +697,48 @@
 							},
 							{
 								"source": {
-									"name": "paquete_nombre",
+									"name": "nombre",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "paquete_nombre",
+									"name": "nombre",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "fecha_entrega",
+									"name": "contenido",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "fecha_entrega",
+									"name": "contenido",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "lote_produccion",
+									"name": "peso_estandar_kg",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "lote_produccion",
+									"name": "peso_estándar_kg",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "peso_paquete_kg",
+									"name": "costo_estimado_bs",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "peso_paquete_kg",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "fecha_proxima_entrega",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "fecha_proxima_entrega",
+									"name": "costo_estimado_bs",
 									"type": "String",
 									"physicalType": "varchar"
 								}
@@ -859,42 +799,6 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "entrega_id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "entrega_id",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "boleta_id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "boleta_id",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "ci_beneficiaria",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "ci_beneficiaria",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
 									"name": "establecimiento_id",
 									"type": "String",
 									"physicalType": "String"
@@ -907,72 +811,96 @@
 							},
 							{
 								"source": {
-									"name": "paquete_id",
+									"name": "codigo_snis",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "paquete_id",
+									"name": "codigo_snis",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "paquete_nombre",
+									"name": "nombre",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "paquete_nombre",
+									"name": "nombre",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "fecha_entrega",
+									"name": "tipo",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "fecha_entrega",
+									"name": "tipo",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "lote_produccion",
+									"name": "nivel_atencion",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "lote_produccion",
+									"name": "nivel_de_atención",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "peso_paquete_kg",
+									"name": "municipio",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "peso_paquete_kg",
+									"name": "municipio",
 									"type": "String",
 									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "fecha_proxima_entrega",
+									"name": "departamento",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "fecha_proxima_entrega",
+									"name": "departamento",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "red_salud",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "red_salud",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "estado",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "estado",
 									"type": "String",
 									"physicalType": "varchar"
 								}
