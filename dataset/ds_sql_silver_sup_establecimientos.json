@@ -1,5 +1,5 @@
 {
-	"name": "ds_sql_bronze_sup_catalogo_paquetes",
+	"name": "ds_sql_silver_sup_establecimientos",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_azure_sql_dw_dest",
@@ -8,8 +8,8 @@
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"typeProperties": {
-			"schema": "bronze",
-			"table": "sup_catalogo_paquetes"
+			"schema": "silver",
+			"table": "dim_establecimiento"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
