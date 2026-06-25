@@ -8,8 +8,7 @@
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"typeProperties": {
-			"schema": "silver",
-			"table": "dim_paquete"
+			"tableName": "[silver].[dim_paquete]"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
