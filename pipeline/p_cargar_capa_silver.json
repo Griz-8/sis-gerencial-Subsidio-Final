@@ -99,7 +99,7 @@
 				}
 			},
 			{
-				"name": "Limpiar Entregas_copy1",
+				"name": "Limpiar Paquetes",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -112,7 +112,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_bronze_to_silver_entregas",
+						"referenceName": "df_bronze_to_silver_catalogo_paquetes",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -123,7 +123,7 @@
 				}
 			},
 			{
-				"name": "Limpiar Entregas_copy2",
+				"name": "Limpiar Establecimientos",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -136,7 +136,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_bronze_to_silver_entregas",
+						"referenceName": "df_bronze_to_silver_establecimientos",
 						"type": "DataFlowReference"
 					},
 					"compute": {
