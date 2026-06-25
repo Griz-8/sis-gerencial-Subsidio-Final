@@ -7,6 +7,32 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
+		"structure": [
+			{
+				"name": "paquete_id",
+				"type": "Int32"
+			},
+			{
+				"name": "nombre",
+				"type": "String"
+			},
+			{
+				"name": "contenido",
+				"type": "String"
+			},
+			{
+				"name": "peso_estandar_kg",
+				"type": "Decimal"
+			},
+			{
+				"name": "costo_estimado_bs",
+				"type": "Decimal"
+			},
+			{
+				"name": "fecha_procesamiento",
+				"type": "DateTime"
+			}
+		],
 		"typeProperties": {
 			"tableName": "[silver].[dim_paquete]"
 		}
