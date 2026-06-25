@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_silver_sup_catalogo_paquetes",
+						"referenceName": "ds_sql_silver_sup_catalogo_paquetes_New1",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -45,6 +45,14 @@
 				"          fecha_procesamiento = currentTimestamp()) ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          paquete_id as integer,",
+				"          nombre as string,",
+				"          contenido as string,",
+				"          peso_estandar_kg as decimal(10,2),",
+				"          costo_estimado_bs as decimal(10,2),",
+				"          fecha_procesamiento as timestamp",
+				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
