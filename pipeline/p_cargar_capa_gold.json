@@ -149,7 +149,14 @@
 			{
 				"name": "fact_boletas",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "dim_beneficiaria",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -173,7 +180,20 @@
 			{
 				"name": "fact_controles",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "dim_beneficiaria",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					},
+					{
+						"activity": "dim_establecimiento",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -197,7 +217,26 @@
 			{
 				"name": "fact_despachos",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "dim_vehiculo",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					},
+					{
+						"activity": "dim_almacen",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					},
+					{
+						"activity": "dim_transportista",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -221,7 +260,20 @@
 			{
 				"name": "fact_entregas",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "dim_paquete",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					},
+					{
+						"activity": "dim_beneficiaria",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -245,7 +297,20 @@
 			{
 				"name": "fact_inscripciones",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "dim_beneficiaria",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					},
+					{
+						"activity": "dim_establecimiento",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -269,7 +334,26 @@
 			{
 				"name": "fact_recepciones",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "dim_vehiculo",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					},
+					{
+						"activity": "dim_transportista",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					},
+					{
+						"activity": "dim_almacen",
+						"dependencyConditions": [
+							"Skipped"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
