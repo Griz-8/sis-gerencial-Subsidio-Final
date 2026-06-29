@@ -1,8 +1,8 @@
 {
-	"name": "df_silver_to_gold_dim_transportistas",
+	"name": "df_silver_to_gold_dim_transportista",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/dim"
+			"name": "silver_to_gold/dim2"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -18,13 +18,17 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_gold_transportistas",
+						"referenceName": "ds_sql_gold_transportista",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          transportista_id as integer,",
@@ -39,13 +43,20 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 derive(razon_social = trim(upper(razon_social)),",
+				"          municipio = trim(upper(municipio)),",
+				"          contacto = trim(upper(contacto)),",
+				"          estado = trim(upper(estado))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
+				"          transportista_key as integer,",
 				"          transportista_id as integer,",
 				"          razon_social as string,",
 				"          nit as string,",
 				"          municipio as string,",
+				"          contacto as string,",
+				"          telefono as string,",
 				"          estado as string",
 				"     ),",
 				"     deletable:false,",
@@ -61,6 +72,8 @@
 				"          razon_social,",
 				"          nit,",
 				"          municipio,",
+				"          contacto,",
+				"          telefono,",
 				"          estado",
 				"     )) ~> sink1"
 			]

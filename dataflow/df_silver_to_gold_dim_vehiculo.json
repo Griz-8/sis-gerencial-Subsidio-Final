@@ -1,8 +1,8 @@
 {
-	"name": "df_silver_to_gold_dim_vehiculos",
+	"name": "df_silver_to_gold_dim_vehiculo",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/dim"
+			"name": "silver_to_gold/dim2"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -18,13 +18,17 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_gold_vehiculos",
+						"referenceName": "ds_sql_gold_vehiculo",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          vehiculo_id as integer,",
@@ -39,11 +43,15 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 derive(descripcion = trim(upper(descripcion)),",
+				"          placa = trim(upper(placa)),",
+				"          tipo = trim(upper(tipo)),",
+				"          estado = trim(upper(estado))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
+				"          vehiculo_key as integer,",
 				"          vehiculo_id as integer,",
-				"          transportista_id as integer,",
 				"          descripcion as string,",
 				"          placa as string,",
 				"          tipo as string,",
@@ -60,7 +68,6 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          vehiculo_id,",
-				"          transportista_id,",
 				"          descripcion,",
 				"          placa,",
 				"          tipo,",

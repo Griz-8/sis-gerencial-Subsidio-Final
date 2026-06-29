@@ -1,23 +1,23 @@
 {
-	"name": "ds_sql_gold_vehiculos",
+	"name": "ds_sql_gold_vehiculo",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_azure_sql_dw_dest",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/dim"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "vehiculo_id",
+				"name": "vehiculo_key",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "transportista_id",
+				"name": "vehiculo_id",
 				"type": "int",
 				"precision": 10
 			},
@@ -46,7 +46,7 @@
 		],
 		"typeProperties": {
 			"schema": "gold",
-			"table": "dim_vehiculos"
+			"table": "dim_vehiculo"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"

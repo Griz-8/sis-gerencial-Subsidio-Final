@@ -1,16 +1,21 @@
 {
-	"name": "ds_sql_gold_transportistas",
+	"name": "ds_sql_gold_transportista",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_azure_sql_dw_dest",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/dim"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
+			{
+				"name": "transportista_key",
+				"type": "int",
+				"precision": 10
+			},
 			{
 				"name": "transportista_id",
 				"type": "int",
@@ -29,13 +34,21 @@
 				"type": "varchar"
 			},
 			{
+				"name": "contacto",
+				"type": "varchar"
+			},
+			{
+				"name": "telefono",
+				"type": "varchar"
+			},
+			{
 				"name": "estado",
 				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "gold",
-			"table": "dim_transportistas"
+			"table": "dim_transportista"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
