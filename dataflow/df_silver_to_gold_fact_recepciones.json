@@ -2,7 +2,7 @@
 	"name": "df_silver_to_gold_fact_recepciones",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/fact"
+			"name": "silver_to_gold/fact2"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,7 +12,28 @@
 						"referenceName": "ds_sql_silver_as_recepciones",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "SilverRecepciones"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_almacen",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimAlmacen"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_transportista",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimTransportista"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_vehiculo",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimVehiculo"
 				}
 			],
 			"sinks": [
@@ -24,7 +45,23 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          recepcion_id as integer,",
@@ -44,38 +81,103 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"     format: 'table') ~> SilverRecepciones",
+				"source(output(",
+				"          almacen_key as integer,",
+				"          almacen_id as integer,",
+				"          nombre as string,",
+				"          municipio as string,",
+				"          departamento as string,",
+				"          direccion as string,",
+				"          capacidad_m3 as decimal(10,2),",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimAlmacen",
+				"source(output(",
+				"          transportista_key as integer,",
+				"          transportista_id as integer,",
+				"          razon_social as string,",
+				"          nit as string,",
+				"          municipio as string,",
+				"          contacto as string,",
+				"          telefono as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimTransportista",
+				"source(output(",
+				"          vehiculo_key as integer,",
+				"          vehiculo_id as integer,",
+				"          descripcion as string,",
+				"          placa as string,",
+				"          tipo as string,",
+				"          capacidad_kg as decimal(10,2),",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimVehiculo",
+				"SilverRecepciones derive(tiempo_key = toInteger(toString(fecha_recepcion, 'yyyyMMdd')),",
+				"          cantidad_recepciones = 1) ~> derivedColumn1",
+				"derivedColumn1, GoldDimAlmacen join(SilverRecepciones@almacen_id == GoldDimAlmacen@almacen_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, GoldDimTransportista join(SilverRecepciones@transportista_id == GoldDimTransportista@transportista_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2, GoldDimVehiculo join(SilverRecepciones@vehiculo_id == GoldDimVehiculo@vehiculo_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3 derive(cantidad_recibida = toInteger(cantidad_recibida)) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
+				"          recepcion_key as integer,",
 				"          recepcion_id as integer,",
-				"          nro_lote as string,",
-				"          almacen_id as integer,",
-				"          transportista_id as integer,",
-				"          vehiculo_id as integer,",
-				"          fecha_recepcion as date,",
-				"          cantidad_recibida as decimal(18,2),",
+				"          tiempo_key as integer,",
+				"          almacen_key as integer,",
+				"          transportista_key as integer,",
+				"          vehiculo_key as integer,",
+				"          lote_produccion as string,",
+				"          cantidad_recibida as integer,",
 				"          temperatura_llegada as decimal(5,2),",
-				"          estado as string",
+				"          responsable_recepcion as string,",
+				"          estado_recepcion as string,",
+				"          cantidad_recepciones as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          recepcion_id,",
-				"          nro_lote,",
-				"          almacen_id,",
-				"          transportista_id,",
-				"          vehiculo_id,",
-				"          fecha_recepcion,",
+				"          tiempo_key,",
+				"          almacen_key,",
+				"          transportista_key,",
+				"          vehiculo_key,",
+				"          lote_produccion = nro_lote,",
 				"          cantidad_recibida,",
 				"          temperatura_llegada,",
-				"          estado",
+				"          responsable_recepcion = responsable,",
+				"          estado_recepcion = SilverRecepciones@estado,",
+				"          cantidad_recepciones",
 				"     )) ~> sink1"
 			]
 		}

@@ -6,22 +6,33 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/fact"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
+			{
+				"name": "control_key",
+				"type": "int",
+				"precision": 10
+			},
 			{
 				"name": "control_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "ci_beneficiaria",
-				"type": "varchar"
+				"name": "tiempo_key",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "establecimiento_id",
+				"name": "beneficiaria_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "establecimiento_key",
 				"type": "int",
 				"precision": 10
 			},
@@ -31,10 +42,6 @@
 				"precision": 10
 			},
 			{
-				"name": "fecha_control",
-				"type": "date"
-			},
-			{
 				"name": "semana_gestacion",
 				"type": "int",
 				"precision": 10
@@ -42,12 +49,21 @@
 			{
 				"name": "peso_madre_kg",
 				"type": "decimal",
-				"precision": 5,
+				"precision": 10,
 				"scale": 2
 			},
 			{
 				"name": "presion_arterial",
 				"type": "varchar"
+			},
+			{
+				"name": "estado_control",
+				"type": "varchar"
+			},
+			{
+				"name": "cantidad_controles",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

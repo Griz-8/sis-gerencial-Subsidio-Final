@@ -2,7 +2,7 @@
 	"name": "df_silver_to_gold_dim_transportista",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/dim2"
+			"name": "silver_to_gold/dim"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

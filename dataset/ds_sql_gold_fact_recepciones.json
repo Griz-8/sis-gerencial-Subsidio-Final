@@ -6,44 +6,49 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/fact"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
+			{
+				"name": "recepcion_key",
+				"type": "int",
+				"precision": 10
+			},
 			{
 				"name": "recepcion_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "nro_lote",
+				"name": "tiempo_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "almacen_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "transportista_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vehiculo_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lote_produccion",
 				"type": "varchar"
 			},
 			{
-				"name": "almacen_id",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "transportista_id",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "vehiculo_id",
-				"type": "int",
-				"precision": 10
-			},
-			{
-				"name": "fecha_recepcion",
-				"type": "date"
-			},
-			{
 				"name": "cantidad_recibida",
-				"type": "decimal",
-				"precision": 18,
-				"scale": 2
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "temperatura_llegada",
@@ -52,8 +57,17 @@
 				"scale": 2
 			},
 			{
-				"name": "estado",
+				"name": "responsable_recepcion",
 				"type": "varchar"
+			},
+			{
+				"name": "estado_recepcion",
+				"type": "varchar"
+			},
+			{
+				"name": "cantidad_recepciones",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

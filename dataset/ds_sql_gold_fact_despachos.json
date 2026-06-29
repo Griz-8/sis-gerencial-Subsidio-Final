@@ -1,18 +1,43 @@
 {
-	"name": "ds_sql_gold_despachos",
+	"name": "ds_sql_gold_fact_despachos",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_azure_sql_dw_dest",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/fact"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
 			{
+				"name": "despacho_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
 				"name": "despacho_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "tiempo_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "almacen_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "transportista_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vehiculo_key",
 				"type": "int",
 				"precision": 10
 			},
@@ -21,8 +46,12 @@
 				"type": "varchar"
 			},
 			{
-				"name": "fecha_despacho",
-				"type": "date"
+				"name": "nro_guia_despacho",
+				"type": "varchar"
+			},
+			{
+				"name": "centro_destino",
+				"type": "varchar"
 			},
 			{
 				"name": "cantidad_despachada",
@@ -30,12 +59,13 @@
 				"precision": 10
 			},
 			{
-				"name": "centro_destino",
+				"name": "estado_despacho",
 				"type": "varchar"
 			},
 			{
-				"name": "estado",
-				"type": "varchar"
+				"name": "cantidad_despachos",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

@@ -2,7 +2,7 @@
 	"name": "df_silver_to_gold_fact_boletas",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/fact"
+			"name": "silver_to_gold/fact2"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,7 +12,14 @@
 						"referenceName": "ds_sql_silver_sup_boletas",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "SilverBoletas"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_beneficiaria",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimBeneficiaria"
 				}
 			],
 			"sinks": [
@@ -24,7 +31,14 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "join1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          boleta_id as integer,",
@@ -37,32 +51,53 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"     format: 'table') ~> SilverBoletas",
+				"source(output(",
+				"          beneficiaria_key as integer,",
+				"          ci as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          genero as string,",
+				"          estado_civil as string,",
+				"          municipio as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimBeneficiaria",
+				"SilverBoletas derive(tiempo_key = toInteger(toString(fecha_emision, 'yyyyMMdd')),",
+				"          cantidad_boletas = 1) ~> derivedColumn1",
+				"derivedColumn1, GoldDimBeneficiaria join(ci_beneficiaria == ci,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
+				"          boleta_key as integer,",
 				"          boleta_id as integer,",
-				"          control_id as integer,",
-				"          ci_beneficiaria as string,",
+				"          tiempo_key as integer,",
+				"          beneficiaria_key as integer,",
 				"          nro_boleta as string,",
-				"          fecha_emision as date,",
-				"          estado as string",
+				"          estado_boleta as string,",
+				"          cantidad_boletas as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          boleta_id,",
-				"          control_id,",
-				"          ci_beneficiaria,",
+				"          tiempo_key,",
+				"          beneficiaria_key,",
 				"          nro_boleta,",
-				"          fecha_emision,",
-				"          estado",
+				"          cantidad_boletas",
 				"     )) ~> sink1"
 			]
 		}

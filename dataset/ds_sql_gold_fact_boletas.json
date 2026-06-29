@@ -6,36 +6,43 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/fact"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
+			{
+				"name": "boleta_key",
+				"type": "int",
+				"precision": 10
+			},
 			{
 				"name": "boleta_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "control_id",
+				"name": "tiempo_key",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "ci_beneficiaria",
-				"type": "varchar"
+				"name": "beneficiaria_key",
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "nro_boleta",
 				"type": "varchar"
 			},
 			{
-				"name": "fecha_emision",
-				"type": "date"
+				"name": "estado_boleta",
+				"type": "varchar"
 			},
 			{
-				"name": "estado",
-				"type": "varchar"
+				"name": "cantidad_boletas",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

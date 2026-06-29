@@ -6,28 +6,35 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/fact"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
+			{
+				"name": "inscripcion_key",
+				"type": "int",
+				"precision": 10
+			},
 			{
 				"name": "inscripcion_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "ci_beneficiaria",
-				"type": "varchar"
-			},
-			{
-				"name": "establecimiento_id",
+				"name": "tiempo_key",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "fecha_inscripcion",
-				"type": "date"
+				"name": "beneficiaria_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "establecimiento_key",
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "semana_gestacion",
@@ -35,8 +42,13 @@
 				"precision": 10
 			},
 			{
-				"name": "estado",
+				"name": "estado_inscripcion",
 				"type": "varchar"
+			},
+			{
+				"name": "cantidad_inscripciones",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

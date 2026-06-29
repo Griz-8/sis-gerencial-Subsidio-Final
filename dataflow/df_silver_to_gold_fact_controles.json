@@ -2,7 +2,7 @@
 	"name": "df_silver_to_gold_fact_controles",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/fact"
+			"name": "silver_to_gold/fact2"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,7 +12,21 @@
 						"referenceName": "ds_sql_silver_sup_controles",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "SilverControles"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_beneficiaria",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimBeneficiaria"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_establecimiento",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimEstablecimiento"
 				}
 			],
 			"sinks": [
@@ -24,7 +38,17 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          control_id as integer,",
@@ -39,36 +63,82 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"     format: 'table') ~> SilverControles",
+				"source(output(",
+				"          beneficiaria_key as integer,",
+				"          ci as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          genero as string,",
+				"          estado_civil as string,",
+				"          municipio as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimBeneficiaria",
+				"source(output(",
+				"          establecimiento_key as integer,",
+				"          establecimiento_id as integer,",
+				"          nombre as string,",
+				"          codigo_snis as string,",
+				"          nivel_atencion as string,",
+				"          red_salud as string,",
+				"          municipio as string,",
+				"          departamento as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimEstablecimiento",
+				"SilverControles derive(tiempo_key = toInteger(toString(fecha_control, 'yyyyMMdd')),",
+				"          cantidad_controles = 1) ~> derivedColumn1",
+				"derivedColumn1, GoldDimBeneficiaria join(ci_beneficiaria == ci,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, GoldDimEstablecimiento join(SilverControles@establecimiento_id == GoldDimEstablecimiento@establecimiento_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
+				"          control_key as integer,",
 				"          control_id as integer,",
-				"          ci_beneficiaria as string,",
-				"          establecimiento_id as integer,",
+				"          tiempo_key as integer,",
+				"          beneficiaria_key as integer,",
+				"          establecimiento_key as integer,",
 				"          nro_control as integer,",
-				"          fecha_control as date,",
 				"          semana_gestacion as integer,",
-				"          peso_madre_kg as decimal(5,2),",
-				"          presion_arterial as string",
+				"          peso_madre_kg as decimal(10,2),",
+				"          presion_arterial as string,",
+				"          estado_control as string,",
+				"          cantidad_controles as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          control_id,",
-				"          ci_beneficiaria,",
-				"          establecimiento_id,",
+				"          tiempo_key,",
+				"          beneficiaria_key,",
+				"          establecimiento_key,",
 				"          nro_control,",
-				"          fecha_control,",
 				"          semana_gestacion,",
 				"          peso_madre_kg,",
-				"          presion_arterial",
+				"          presion_arterial,",
+				"          estado_control = estado,",
+				"          cantidad_controles",
 				"     )) ~> sink1"
 			]
 		}

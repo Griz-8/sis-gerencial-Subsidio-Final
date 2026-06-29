@@ -6,11 +6,16 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/fact"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
+			{
+				"name": "entrega_key",
+				"type": "int",
+				"precision": 10
+			},
 			{
 				"name": "entrega_id",
 				"type": "int",
@@ -22,28 +27,22 @@
 				"precision": 10
 			},
 			{
-				"name": "ci_beneficiaria",
-				"type": "varchar"
-			},
-			{
-				"name": "fecha_entrega",
-				"type": "date"
-			},
-			{
-				"name": "fecha_proxima_entrega",
-				"type": "date"
-			},
-			{
-				"name": "paquete_nombre",
-				"type": "varchar"
-			},
-			{
 				"name": "establecimiento_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "paquete_id",
+				"name": "tiempo_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "beneficiaria_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "paquete_key",
 				"type": "int",
 				"precision": 10
 			},
@@ -54,8 +53,17 @@
 				"scale": 2
 			},
 			{
+				"name": "fecha_proxima_entrega",
+				"type": "date"
+			},
+			{
 				"name": "lote_produccion",
 				"type": "varchar"
+			},
+			{
+				"name": "cantidad_entregas",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

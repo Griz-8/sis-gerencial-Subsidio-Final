@@ -2,7 +2,7 @@
 	"name": "df_silver_to_gold_fact_entregas",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/fact"
+			"name": "silver_to_gold/fact2"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,7 +12,21 @@
 						"referenceName": "ds_sql_silver_as_entregas",
 						"type": "DatasetReference"
 					},
-					"name": "SourceEntregas"
+					"name": "SilverEntregas"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_beneficiaria",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimBeneficiaria"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_paquete",
+						"type": "DatasetReference"
+					},
+					"name": "GoldDimPaquete"
 				}
 			],
 			"sinks": [
@@ -24,7 +38,17 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          entrega_id as integer,",
@@ -41,20 +65,58 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SourceEntregas",
-				"SourceEntregas sink(allowSchemaDrift: true,",
+				"     format: 'table') ~> SilverEntregas",
+				"source(output(",
+				"          beneficiaria_key as integer,",
+				"          ci as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          genero as string,",
+				"          estado_civil as string,",
+				"          municipio as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimBeneficiaria",
+				"source(output(",
+				"          paquete_key as integer,",
+				"          paquete_id as integer,",
+				"          nombre as string,",
+				"          contenido as string,",
+				"          peso_estandar_kg as decimal(10,2),",
+				"          costo_estimado_bs as decimal(10,2)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> GoldDimPaquete",
+				"SilverEntregas derive(tiempo_key = toInteger(toString(fecha_entrega, 'yyyyMMdd')),",
+				"          cantidad_entregas = 1) ~> derivedColumn1",
+				"derivedColumn1, GoldDimBeneficiaria join(ci_beneficiaria == ci,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, GoldDimPaquete join(SilverEntregas@paquete_id == GoldDimPaquete@paquete_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
+				"          entrega_key as integer,",
 				"          entrega_id as integer,",
 				"          boleta_id as integer,",
-				"          ci_beneficiaria as string,",
-				"          fecha_entrega as date,",
-				"          fecha_proxima_entrega as date,",
-				"          paquete_nombre as string,",
 				"          establecimiento_id as integer,",
-				"          paquete_id as integer,",
+				"          tiempo_key as integer,",
+				"          beneficiaria_key as integer,",
+				"          paquete_key as integer,",
 				"          peso_paquete_kg as decimal(10,2),",
-				"          lote_produccion as string",
+				"          fecha_proxima_entrega as date,",
+				"          lote_produccion as string,",
+				"          cantidad_entregas as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -69,14 +131,14 @@
 				"     mapColumn(",
 				"          entrega_id,",
 				"          boleta_id,",
-				"          ci_beneficiaria,",
-				"          fecha_entrega,",
-				"          fecha_proxima_entrega,",
-				"          paquete_nombre,",
 				"          establecimiento_id,",
-				"          paquete_id,",
+				"          tiempo_key,",
+				"          beneficiaria_key,",
+				"          paquete_key,",
 				"          peso_paquete_kg,",
-				"          lote_produccion",
+				"          fecha_proxima_entrega,",
+				"          lote_produccion,",
+				"          cantidad_entregas",
 				"     )) ~> sink1"
 			]
 		}
