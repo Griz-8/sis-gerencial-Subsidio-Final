@@ -13,373 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_as_almacenes')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "bronze_to_silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_bronze_as_almacenes",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_silver_as_almacenes",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          almacen_id as string,",
-						"          municipio as string,",
-						"          nombre as string,",
-						"          departamento as string,",
-						"          direccion as string,",
-						"          capacidad_m3 as string,",
-						"          estado as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source1 derive(nombre = trim(nombre)) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          almacen_id as integer,",
-						"          municipio as string,",
-						"          nombre as string,",
-						"          departamento as string,",
-						"          direccion as string,",
-						"          capacidad_m3 as decimal(10,2),",
-						"          estado as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          almacen_id,",
-						"          municipio,",
-						"          nombre,",
-						"          departamento,",
-						"          direccion,",
-						"          capacidad_m3,",
-						"          estado",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_as_recepciones')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "bronze_to_silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_bronze_as_recepciones",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_silver_as_recepciones",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          recepcion_id as string,",
-						"          nro_lote as string,",
-						"          almacen_id as string,",
-						"          transportista_id as string,",
-						"          vehiculo_id as string,",
-						"          fecha_recepcion as string,",
-						"          cantidad_recibida as string,",
-						"          unidad as string,",
-						"          condicion as string,",
-						"          estado as string,",
-						"          responsable as string,",
-						"          nro_guia_remision as string,",
-						"          temperatura_llegada as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source1 derive(recepcion_id = toInteger(recepcion_id),",
-						"          fecha_recepcion = iif(     instr(fecha_recepcion, '/') > 0,     toDate(fecha_recepcion, 'dd/MM/yyyy'),     iif(         instr(fecha_recepcion, '-') == 3,         toDate(fecha_recepcion, 'dd-MM-yyyy'),         toDate(fecha_recepcion, 'yyyy-MM-dd')     ) ),",
-						"          cantidad_recibida = toDecimal(cantidad_recibida, 18, 2),",
-						"          temperatura_llegada = toDecimal(temperatura_llegada, 5, 2),",
-						"          almacen_id = toInteger(almacen_id),",
-						"          transportista_id = toInteger(transportista_id),",
-						"          vehiculo_id = toInteger(vehiculo_id)) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          recepcion_id as integer,",
-						"          nro_lote as string,",
-						"          condicion as string,",
-						"          estado as string,",
-						"          almacen_id as integer,",
-						"          transportista_id as integer,",
-						"          vehiculo_id as integer,",
-						"          fecha_recepcion as date,",
-						"          cantidad_recibida as decimal(18,2),",
-						"          unidad as string,",
-						"          responsable as string,",
-						"          nro_guia_remision as string,",
-						"          temperatura_llegada as decimal(5,2)",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          recepcion_id,",
-						"          nro_lote,",
-						"          condicion,",
-						"          estado,",
-						"          almacen_id,",
-						"          transportista_id,",
-						"          vehiculo_id,",
-						"          fecha_recepcion,",
-						"          cantidad_recibida,",
-						"          unidad,",
-						"          responsable,",
-						"          nro_guia_remision,",
-						"          temperatura_llegada",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_as_vehiculos')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "bronze_to_silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_bronze_as_vehiculos",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_silver_as_vehiculos",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          vehiculo_id as string,",
-						"          transportista_id as string,",
-						"          descripcion as string,",
-						"          placa as string,",
-						"          tipo as string,",
-						"          capacidad_kg as string,",
-						"          estado as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source1 derive(vehiculo_id = toInteger(vehiculo_id),",
-						"          transportista_id = toInteger(vehiculo_id),",
-						"          capacidad_kg = toDecimal(capacidad_kg, 10, 2),",
-						"          placa = upper(trim(placa)),",
-						"          tipo = upper(trim(tipo)),",
-						"          estado = upper(trim(estado))) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          vehiculo_id as integer,",
-						"          transportista_id as integer,",
-						"          descripcion as string,",
-						"          placa as string,",
-						"          tipo as string,",
-						"          capacidad_kg as decimal(10,2),",
-						"          estado as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          vehiculo_id,",
-						"          transportista_id,",
-						"          descripcion,",
-						"          placa,",
-						"          tipo,",
-						"          capacidad_kg,",
-						"          estado",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_boletas')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "bronze_to_silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_bronze_sup_boletas",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_silver_sup_boletas",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "LimpiarDatos"
-						},
-						{
-							"name": "aggregate1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          boleta_id as string,",
-						"          control_id as string,",
-						"          ci_beneficiaria as string,",
-						"          nro_boleta as string,",
-						"          fecha_emision as string,",
-						"          estado as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source1 derive(ci_beneficiaria = upper(     iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'),         concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 3, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, 2)),         iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'),             concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', right(regexReplace(ci_beneficiaria, '[-_]', ''), 2)),             regexReplace(ci_beneficiaria, '[-_]', '')         )     ) ),",
-						"          estado = initCap(trim(estado)),",
-						"          fecha_emision = iif(isNull(fecha_emision) || trim(toString(fecha_emision)) == '',      toDate(null()),      iif(instr(fecha_emision, '/') > 0, toDate(fecha_emision, 'dd/MM/yyyy'),          iif(instr(fecha_emision, '-') == 3, toDate(fecha_emision, 'dd-MM-yyyy'),              toDate(fecha_emision, 'yyyy-MM-dd')         )     ) ),",
-						"          boleta_id = toInteger(toString(boleta_id))) ~> LimpiarDatos",
-						"LimpiarDatos aggregate(groupBy(boleta_id),",
-						"     control_id = first(boleta_id),",
-						"          ci_beneficiaria = first(ci_beneficiaria),",
-						"          nro_boleta = first(nro_boleta),",
-						"          fecha_emision = first(fecha_emision),",
-						"          estado = first(estado)) ~> aggregate1",
-						"aggregate1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          boleta_id as integer,",
-						"          control_id as integer,",
-						"          ci_beneficiaria as string,",
-						"          nro_boleta as string,",
-						"          fecha_emision as date,",
-						"          estado as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     preSQLs:['TRUNCATE TABLE silver.sup_boletas;'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          boleta_id,",
-						"          control_id,",
-						"          ci_beneficiaria,",
-						"          nro_boleta,",
-						"          fecha_emision,",
-						"          estado",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_catalogo_paquetes')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1219,7 +852,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim2"
+					"name": "silver_to_gold/dim"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1306,7 +939,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim2"
+					"name": "silver_to_gold/dim"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1387,94 +1020,12 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_boletas')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "silver_to_gold/dim"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_silver_sup_boletas",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_gold_boletas",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          boleta_id as integer,",
-						"          control_id as integer,",
-						"          ci_beneficiaria as string,",
-						"          nro_boleta as string,",
-						"          fecha_emision as date,",
-						"          estado as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source1 select(mapColumn(",
-						"          boleta_id,",
-						"          nro_boleta,",
-						"          fecha_emision,",
-						"          estado",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          boleta_id as integer,",
-						"          nro_boleta as string,",
-						"          fecha_emision as date,",
-						"          estado as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          boleta_id,",
-						"          nro_boleta,",
-						"          fecha_emision,",
-						"          estado",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_establecimiento')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim2"
+					"name": "silver_to_gold/dim"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1567,7 +1118,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim2"
+					"name": "silver_to_gold/dim"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1646,7 +1197,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim2"
+					"name": "silver_to_gold/dim"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1731,7 +1282,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim2"
+					"name": "silver_to_gold/dim"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1802,6 +1353,737 @@
 						"          tipo,",
 						"          capacidad_kg,",
 						"          estado",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_fact_boletas')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "silver_to_gold/fact2"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_sup_boletas",
+								"type": "DatasetReference"
+							},
+							"name": "SilverBoletas"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_beneficiaria",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimBeneficiaria"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_fact_boletas",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "join1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          boleta_id as integer,",
+						"          control_id as integer,",
+						"          ci_beneficiaria as string,",
+						"          nro_boleta as string,",
+						"          fecha_emision as date,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverBoletas",
+						"source(output(",
+						"          beneficiaria_key as integer,",
+						"          ci as string,",
+						"          nombre_completo as string,",
+						"          fecha_nacimiento as date,",
+						"          genero as string,",
+						"          estado_civil as string,",
+						"          municipio as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimBeneficiaria",
+						"SilverBoletas derive(tiempo_key = toInteger(toString(fecha_emision, 'yyyyMMdd')),",
+						"          cantidad_boletas = 1) ~> derivedColumn1",
+						"derivedColumn1, GoldDimBeneficiaria join(ci_beneficiaria == ci,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          boleta_key as integer,",
+						"          boleta_id as integer,",
+						"          tiempo_key as integer,",
+						"          beneficiaria_key as integer,",
+						"          nro_boleta as string,",
+						"          estado_boleta as string,",
+						"          cantidad_boletas as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          boleta_id,",
+						"          tiempo_key,",
+						"          beneficiaria_key,",
+						"          nro_boleta,",
+						"          cantidad_boletas",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_fact_controles')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "silver_to_gold/fact2"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_sup_controles",
+								"type": "DatasetReference"
+							},
+							"name": "SilverControles"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_beneficiaria",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimBeneficiaria"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_establecimiento",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimEstablecimiento"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_fact_controles",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          control_id as integer,",
+						"          ci_beneficiaria as string,",
+						"          establecimiento_id as integer,",
+						"          nro_control as integer,",
+						"          fecha_control as date,",
+						"          semana_gestacion as integer,",
+						"          peso_madre_kg as decimal(5,2),",
+						"          presion_arterial as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverControles",
+						"source(output(",
+						"          beneficiaria_key as integer,",
+						"          ci as string,",
+						"          nombre_completo as string,",
+						"          fecha_nacimiento as date,",
+						"          genero as string,",
+						"          estado_civil as string,",
+						"          municipio as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimBeneficiaria",
+						"source(output(",
+						"          establecimiento_key as integer,",
+						"          establecimiento_id as integer,",
+						"          nombre as string,",
+						"          codigo_snis as string,",
+						"          nivel_atencion as string,",
+						"          red_salud as string,",
+						"          municipio as string,",
+						"          departamento as string,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimEstablecimiento",
+						"SilverControles derive(tiempo_key = toInteger(toString(fecha_control, 'yyyyMMdd')),",
+						"          cantidad_controles = 1) ~> derivedColumn1",
+						"derivedColumn1, GoldDimBeneficiaria join(ci_beneficiaria == ci,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, GoldDimEstablecimiento join(SilverControles@establecimiento_id == GoldDimEstablecimiento@establecimiento_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          control_key as integer,",
+						"          control_id as integer,",
+						"          tiempo_key as integer,",
+						"          beneficiaria_key as integer,",
+						"          establecimiento_key as integer,",
+						"          nro_control as integer,",
+						"          semana_gestacion as integer,",
+						"          peso_madre_kg as decimal(10,2),",
+						"          presion_arterial as string,",
+						"          estado_control as string,",
+						"          cantidad_controles as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          control_id,",
+						"          tiempo_key,",
+						"          beneficiaria_key,",
+						"          establecimiento_key,",
+						"          nro_control,",
+						"          semana_gestacion,",
+						"          peso_madre_kg,",
+						"          presion_arterial,",
+						"          estado_control = estado,",
+						"          cantidad_controles",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_fact_despachos')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "silver_to_gold/fact2"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_as_despachos",
+								"type": "DatasetReference"
+							},
+							"name": "SilverDespachos"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_almacen",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimAlmacen"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_transportista",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimTransportista"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_vehiculo",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimVehiculo"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_fact_despachos",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "join3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          despacho_id as integer,",
+						"          recepcion_id as integer,",
+						"          nro_lote as string,",
+						"          almacen_id as integer,",
+						"          transportista_id as integer,",
+						"          vehiculo_id as integer,",
+						"          fecha_despacho as date,",
+						"          cantidad_despachada as integer,",
+						"          centro_destino as string,",
+						"          estado as string,",
+						"          responsable as string,",
+						"          nro_guia_despacho as string,",
+						"          fecha_llegada as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverDespachos",
+						"source(output(",
+						"          almacen_key as integer,",
+						"          almacen_id as integer,",
+						"          nombre as string,",
+						"          municipio as string,",
+						"          departamento as string,",
+						"          direccion as string,",
+						"          capacidad_m3 as decimal(10,2),",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimAlmacen",
+						"source(output(",
+						"          transportista_key as integer,",
+						"          transportista_id as integer,",
+						"          razon_social as string,",
+						"          nit as string,",
+						"          municipio as string,",
+						"          contacto as string,",
+						"          telefono as string,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimTransportista",
+						"source(output(",
+						"          vehiculo_key as integer,",
+						"          vehiculo_id as integer,",
+						"          descripcion as string,",
+						"          placa as string,",
+						"          tipo as string,",
+						"          capacidad_kg as decimal(10,2),",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimVehiculo",
+						"SilverDespachos derive(tiempo_key = toInteger(toString(fecha_despacho, 'yyyyMMdd')),",
+						"          cantidad_despachos = 1) ~> derivedColumn1",
+						"derivedColumn1, GoldDimAlmacen join(SilverDespachos@almacen_id == GoldDimAlmacen@almacen_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, GoldDimTransportista join(SilverDespachos@transportista_id == GoldDimTransportista@transportista_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2, GoldDimVehiculo join(SilverDespachos@vehiculo_id == GoldDimVehiculo@vehiculo_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join3",
+						"join3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          despacho_key as integer,",
+						"          despacho_id as integer,",
+						"          tiempo_key as integer,",
+						"          almacen_key as integer,",
+						"          transportista_key as integer,",
+						"          vehiculo_key as integer,",
+						"          nro_lote as string,",
+						"          nro_guia_despacho as string,",
+						"          centro_destino as string,",
+						"          cantidad_despachada as integer,",
+						"          estado_despacho as string,",
+						"          cantidad_despachos as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          despacho_id,",
+						"          tiempo_key,",
+						"          almacen_key,",
+						"          transportista_key,",
+						"          vehiculo_key,",
+						"          nro_lote,",
+						"          nro_guia_despacho,",
+						"          centro_destino,",
+						"          cantidad_despachada,",
+						"          estado_despacho = SilverDespachos@estado,",
+						"          cantidad_despachos",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_fact_entregas')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "silver_to_gold/fact2"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_as_entregas",
+								"type": "DatasetReference"
+							},
+							"name": "SilverEntregas"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_beneficiaria",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimBeneficiaria"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_paquete",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimPaquete"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_fact_entregas",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          entrega_id as integer,",
+						"          boleta_id as integer,",
+						"          ci_beneficiaria as string,",
+						"          establecimiento_id as integer,",
+						"          paquete_id as integer,",
+						"          paquete_nombre as string,",
+						"          fecha_entrega as date,",
+						"          lote_produccion as string,",
+						"          peso_paquete_kg as decimal(10,2),",
+						"          fecha_proxima_entrega as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverEntregas",
+						"source(output(",
+						"          beneficiaria_key as integer,",
+						"          ci as string,",
+						"          nombre_completo as string,",
+						"          fecha_nacimiento as date,",
+						"          genero as string,",
+						"          estado_civil as string,",
+						"          municipio as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimBeneficiaria",
+						"source(output(",
+						"          paquete_key as integer,",
+						"          paquete_id as integer,",
+						"          nombre as string,",
+						"          contenido as string,",
+						"          peso_estandar_kg as decimal(10,2),",
+						"          costo_estimado_bs as decimal(10,2)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimPaquete",
+						"SilverEntregas derive(tiempo_key = toInteger(toString(fecha_entrega, 'yyyyMMdd')),",
+						"          cantidad_entregas = 1) ~> derivedColumn1",
+						"derivedColumn1, GoldDimBeneficiaria join(ci_beneficiaria == ci,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, GoldDimPaquete join(SilverEntregas@paquete_id == GoldDimPaquete@paquete_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          entrega_key as integer,",
+						"          entrega_id as integer,",
+						"          boleta_id as integer,",
+						"          establecimiento_id as integer,",
+						"          tiempo_key as integer,",
+						"          beneficiaria_key as integer,",
+						"          paquete_key as integer,",
+						"          peso_paquete_kg as decimal(10,2),",
+						"          fecha_proxima_entrega as date,",
+						"          lote_produccion as string,",
+						"          cantidad_entregas as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     preSQLs:['TRUNCATE TABLE gold.fact_entregas;'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          entrega_id,",
+						"          boleta_id,",
+						"          establecimiento_id,",
+						"          tiempo_key,",
+						"          beneficiaria_key,",
+						"          paquete_key,",
+						"          peso_paquete_kg,",
+						"          fecha_proxima_entrega,",
+						"          lote_produccion,",
+						"          cantidad_entregas",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_fact_inscripciones')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "silver_to_gold/fact2"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_sup_inscripciones",
+								"type": "DatasetReference"
+							},
+							"name": "SilverInscripciones"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_beneficiaria",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimBeneficiaria"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_establecimiento",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimEstablecimiento"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_fact_inscripciones",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "PrepInscrip"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          inscripcion_id as integer,",
+						"          ci_beneficiaria as string,",
+						"          establecimiento_id as integer,",
+						"          fecha_inscripcion as date,",
+						"          semana_gestacion as integer,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverInscripciones",
+						"source(output(",
+						"          beneficiaria_key as integer,",
+						"          ci as string,",
+						"          nombre_completo as string,",
+						"          fecha_nacimiento as date,",
+						"          genero as string,",
+						"          estado_civil as string,",
+						"          municipio as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimBeneficiaria",
+						"source(output(",
+						"          establecimiento_key as integer,",
+						"          establecimiento_id as integer,",
+						"          nombre as string,",
+						"          codigo_snis as string,",
+						"          nivel_atencion as string,",
+						"          red_salud as string,",
+						"          municipio as string,",
+						"          departamento as string,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimEstablecimiento",
+						"SilverInscripciones derive(tiempo_key = toInteger(toString(fecha_inscripcion, 'yyyyMMdd')),",
+						"          cantidad_inscripciones = 1) ~> PrepInscrip",
+						"PrepInscrip, GoldDimBeneficiaria join(ci_beneficiaria == ci,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, GoldDimEstablecimiento join(SilverInscripciones@establecimiento_id == GoldDimEstablecimiento@establecimiento_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          inscripcion_key as integer,",
+						"          inscripcion_id as integer,",
+						"          tiempo_key as integer,",
+						"          beneficiaria_key as integer,",
+						"          establecimiento_key as integer,",
+						"          semana_gestacion as integer,",
+						"          estado_inscripcion as string,",
+						"          cantidad_inscripciones as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          inscripcion_id,",
+						"          tiempo_key,",
+						"          beneficiaria_key,",
+						"          establecimiento_key,",
+						"          semana_gestacion,",
+						"          estado_inscripcion = SilverInscripciones@estado,",
+						"          cantidad_inscripciones",
 						"     )) ~> sink1"
 					]
 				}

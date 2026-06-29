@@ -60,66 +60,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_bronze_sup_catalogo_paquetes')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_azure_sql_dw_dest",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "entrega_id",
-						"type": "varchar"
-					},
-					{
-						"name": "boleta_id",
-						"type": "varchar"
-					},
-					{
-						"name": "ci_beneficiaria",
-						"type": "varchar"
-					},
-					{
-						"name": "establecimiento_id",
-						"type": "varchar"
-					},
-					{
-						"name": "paquete_id",
-						"type": "varchar"
-					},
-					{
-						"name": "paquete_nombre",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_entrega",
-						"type": "varchar"
-					},
-					{
-						"name": "lote_produccion",
-						"type": "varchar"
-					},
-					{
-						"name": "peso_paquete_kg",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_proxima_entrega",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "bronze",
-					"table": "sup_catalogo_paquetes"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_sql_bronze_sup_catalogo_paquetes2')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -281,25 +221,6 @@
 				"typeProperties": {
 					"schema": "bronze",
 					"table": "sup_entregas"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_bronze_sup_establecimientos')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_azure_sql_dw_dest",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "bronze",
-					"table": "sup_establecimientos"
 				}
 			},
 			"dependsOn": []
@@ -612,7 +533,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_despachos')]",
+			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_fact_despachos')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -621,13 +542,38 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/fact"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
 					{
+						"name": "despacho_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
 						"name": "despacho_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "tiempo_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "almacen_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "transportista_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "vehiculo_key",
 						"type": "int",
 						"precision": 10
 					},
@@ -636,8 +582,12 @@
 						"type": "varchar"
 					},
 					{
-						"name": "fecha_despacho",
-						"type": "date"
+						"name": "nro_guia_despacho",
+						"type": "varchar"
+					},
+					{
+						"name": "centro_destino",
+						"type": "varchar"
 					},
 					{
 						"name": "cantidad_despachada",
@@ -645,12 +595,13 @@
 						"precision": 10
 					},
 					{
-						"name": "centro_destino",
+						"name": "estado_despacho",
 						"type": "varchar"
 					},
 					{
-						"name": "estado",
-						"type": "varchar"
+						"name": "cantidad_despachos",
+						"type": "int",
+						"precision": 10
 					}
 				],
 				"typeProperties": {
@@ -731,36 +682,43 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/fact"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "boleta_key",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "boleta_id",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "control_id",
+						"name": "tiempo_key",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "ci_beneficiaria",
-						"type": "varchar"
+						"name": "beneficiaria_key",
+						"type": "int",
+						"precision": 10
 					},
 					{
 						"name": "nro_boleta",
 						"type": "varchar"
 					},
 					{
-						"name": "fecha_emision",
-						"type": "date"
+						"name": "estado_boleta",
+						"type": "varchar"
 					},
 					{
-						"name": "estado",
-						"type": "varchar"
+						"name": "cantidad_boletas",
+						"type": "int",
+						"precision": 10
 					}
 				],
 				"typeProperties": {
@@ -780,22 +738,33 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/fact"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "control_key",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "control_id",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "ci_beneficiaria",
-						"type": "varchar"
+						"name": "tiempo_key",
+						"type": "int",
+						"precision": 10
 					},
 					{
-						"name": "establecimiento_id",
+						"name": "beneficiaria_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "establecimiento_key",
 						"type": "int",
 						"precision": 10
 					},
@@ -805,10 +774,6 @@
 						"precision": 10
 					},
 					{
-						"name": "fecha_control",
-						"type": "date"
-					},
-					{
 						"name": "semana_gestacion",
 						"type": "int",
 						"precision": 10
@@ -816,12 +781,21 @@
 					{
 						"name": "peso_madre_kg",
 						"type": "decimal",
-						"precision": 5,
+						"precision": 10,
 						"scale": 2
 					},
 					{
 						"name": "presion_arterial",
 						"type": "varchar"
+					},
+					{
+						"name": "estado_control",
+						"type": "varchar"
+					},
+					{
+						"name": "cantidad_controles",
+						"type": "int",
+						"precision": 10
 					}
 				],
 				"typeProperties": {
@@ -841,11 +815,16 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/fact"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "entrega_key",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "entrega_id",
 						"type": "int",
@@ -857,28 +836,22 @@
 						"precision": 10
 					},
 					{
-						"name": "ci_beneficiaria",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_entrega",
-						"type": "date"
-					},
-					{
-						"name": "fecha_proxima_entrega",
-						"type": "date"
-					},
-					{
-						"name": "paquete_nombre",
-						"type": "varchar"
-					},
-					{
 						"name": "establecimiento_id",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "paquete_id",
+						"name": "tiempo_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "beneficiaria_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "paquete_key",
 						"type": "int",
 						"precision": 10
 					},
@@ -889,8 +862,17 @@
 						"scale": 2
 					},
 					{
+						"name": "fecha_proxima_entrega",
+						"type": "date"
+					},
+					{
 						"name": "lote_produccion",
 						"type": "varchar"
+					},
+					{
+						"name": "cantidad_entregas",
+						"type": "int",
+						"precision": 10
 					}
 				],
 				"typeProperties": {
@@ -910,28 +892,35 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/fact"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "inscripcion_key",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "inscripcion_id",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "ci_beneficiaria",
-						"type": "varchar"
-					},
-					{
-						"name": "establecimiento_id",
+						"name": "tiempo_key",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "fecha_inscripcion",
-						"type": "date"
+						"name": "beneficiaria_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "establecimiento_key",
+						"type": "int",
+						"precision": 10
 					},
 					{
 						"name": "semana_gestacion",
@@ -939,8 +928,13 @@
 						"precision": 10
 					},
 					{
-						"name": "estado",
+						"name": "estado_inscripcion",
 						"type": "varchar"
+					},
+					{
+						"name": "cantidad_inscripciones",
+						"type": "int",
+						"precision": 10
 					}
 				],
 				"typeProperties": {
@@ -960,44 +954,49 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/fact"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "recepcion_key",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "recepcion_id",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "nro_lote",
+						"name": "tiempo_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "almacen_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "transportista_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "vehiculo_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "lote_produccion",
 						"type": "varchar"
 					},
 					{
-						"name": "almacen_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "transportista_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "vehiculo_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "fecha_recepcion",
-						"type": "date"
-					},
-					{
 						"name": "cantidad_recibida",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 2
+						"type": "int",
+						"precision": 10
 					},
 					{
 						"name": "temperatura_llegada",
@@ -1006,8 +1005,17 @@
 						"scale": 2
 					},
 					{
-						"name": "estado",
+						"name": "responsable_recepcion",
 						"type": "varchar"
+					},
+					{
+						"name": "estado_recepcion",
+						"type": "varchar"
+					},
+					{
+						"name": "cantidad_recepciones",
+						"type": "int",
+						"precision": 10
 					}
 				],
 				"typeProperties": {
@@ -1066,6 +1074,118 @@
 				"typeProperties": {
 					"schema": "gold",
 					"table": "dim_paquete"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_transportista')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gold/dim"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "transportista_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "transportista_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "razon_social",
+						"type": "varchar"
+					},
+					{
+						"name": "nit",
+						"type": "varchar"
+					},
+					{
+						"name": "municipio",
+						"type": "varchar"
+					},
+					{
+						"name": "contacto",
+						"type": "varchar"
+					},
+					{
+						"name": "telefono",
+						"type": "varchar"
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_transportista"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_vehiculo')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gold/dim"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "vehiculo_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "vehiculo_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "descripcion",
+						"type": "varchar"
+					},
+					{
+						"name": "placa",
+						"type": "varchar"
+					},
+					{
+						"name": "tipo",
+						"type": "varchar"
+					},
+					{
+						"name": "capacidad_kg",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_vehiculo"
 				}
 			},
 			"dependsOn": []
