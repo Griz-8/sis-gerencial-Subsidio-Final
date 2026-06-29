@@ -13,180 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_catalogo_paquetes')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "bronze_to_silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_csv_sup_catalogo_paquetes",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_silver_sup_catalogo_paquetes2",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          paquete_id as string,",
-						"          nombre as string,",
-						"          contenido as string,",
-						"          peso_estandar_kg as string,",
-						"          costo_estimado_bs as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 derive(paquete_id = toInteger(toString(paquete_id)),",
-						"          nombre = trim(nombre),",
-						"          contenido = trim(contenido),",
-						"          peso_estandar_kg = toDecimal(toString(peso_estandar_kg), 10, 2),",
-						"          costo_estimado_bs = toDecimal(costo_estimado_bs, 10, 2),",
-						"          fecha_procesamiento = currentTimestamp()) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          paquete_id as integer,",
-						"          nombre as string,",
-						"          contenido as string,",
-						"          peso_estandar_kg as decimal(10,2),",
-						"          costo_estimado_bs as decimal(10,2),",
-						"          fecha_procesamiento as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          paquete_id,",
-						"          nombre,",
-						"          contenido,",
-						"          peso_estandar_kg,",
-						"          costo_estimado_bs,",
-						"          fecha_procesamiento",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_controles')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "bronze_to_silver"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_bronze_sup_controles",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_sql_silver_sup_controles",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          control_id as string,",
-						"          ci_beneficiaria as string,",
-						"          establecimiento_id as string,",
-						"          nro_control as string,",
-						"          fecha_control as string,",
-						"          semana_gestacion as string,",
-						"          peso_madre_kg as string,",
-						"          presion_arterial as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source1 derive(control_id = toInteger(control_id),",
-						"          establecimiento_id = toInteger(establecimiento_id),",
-						"          nro_control = toInteger(nro_control),",
-						"          semana_gestacion = toInteger(semana_gestacion),",
-						"          peso_madre_kg = toDecimal(peso_madre_kg, 5, 2),",
-						"          fecha_control = iif(     instr(toString(fecha_control), '-') > 0,     toDate(toString(fecha_control), 'yyyy-MM-dd'),     iif(         toInteger(left(toString(fecha_control),2)) > 12,         toDate(toString(fecha_control), 'dd/MM/yyyy'),         toDate(toString(fecha_control), 'MM/dd/yyyy')     ) ),",
-						"          ci_beneficiaria = upper(     iif(         rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'),         concat(             substring(                 regexReplace(ci_beneficiaria, '[-_]', ''),                 3,                 length(regexReplace(ci_beneficiaria, '[-_]', '')) - 2             ),             '-',             substring(                 regexReplace(ci_beneficiaria, '[-_]', ''),                 1,                 2             )         ),         iif(             rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'),             concat(                 substring(                     regexReplace(ci_beneficiaria, '[-_]', ''),                     1,                     length(regexReplace(ci_beneficiaria, '[-_]', '')) - 2                 ),                 '-',                 right(                     regexReplace(ci_beneficiaria, '[-_]', ''),                     2                 )             ),             regexReplace(ci_beneficiaria, '[-_]', '')         )     ) ),",
-						"          presion_arterial = trim(presion_arterial)) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          control_id as integer,",
-						"          ci_beneficiaria as string,",
-						"          establecimiento_id as integer,",
-						"          nro_control as integer,",
-						"          fecha_control as date,",
-						"          semana_gestacion as integer,",
-						"          peso_madre_kg as decimal(5,2),",
-						"          presion_arterial as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          control_id,",
-						"          ci_beneficiaria,",
-						"          establecimiento_id,",
-						"          nro_control,",
-						"          fecha_control,",
-						"          semana_gestacion,",
-						"          peso_madre_kg,",
-						"          presion_arterial",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_despachos')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1365,7 +1191,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/fact2"
+					"name": "silver_to_gold/fact"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1473,7 +1299,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/fact2"
+					"name": "silver_to_gold/fact"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1622,7 +1448,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/fact2"
+					"name": "silver_to_gold/fact"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1806,7 +1632,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/fact2"
+					"name": "silver_to_gold/fact"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1955,7 +1781,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/fact2"
+					"name": "silver_to_gold/fact"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -2089,6 +1915,595 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_fact_recepciones')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "silver_to_gold/fact"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_as_recepciones",
+								"type": "DatasetReference"
+							},
+							"name": "SilverRecepciones"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_almacen",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimAlmacen"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_transportista",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimTransportista"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_vehiculo",
+								"type": "DatasetReference"
+							},
+							"name": "GoldDimVehiculo"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_gold_fact_recepciones",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "join3"
+						},
+						{
+							"name": "derivedColumn2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          recepcion_id as integer,",
+						"          nro_lote as string,",
+						"          condicion as string,",
+						"          estado as string,",
+						"          almacen_id as integer,",
+						"          transportista_id as integer,",
+						"          vehiculo_id as integer,",
+						"          fecha_recepcion as date,",
+						"          cantidad_recibida as decimal(18,2),",
+						"          unidad as string,",
+						"          responsable as string,",
+						"          nro_guia_remision as string,",
+						"          temperatura_llegada as decimal(5,2)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverRecepciones",
+						"source(output(",
+						"          almacen_key as integer,",
+						"          almacen_id as integer,",
+						"          nombre as string,",
+						"          municipio as string,",
+						"          departamento as string,",
+						"          direccion as string,",
+						"          capacidad_m3 as decimal(10,2),",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimAlmacen",
+						"source(output(",
+						"          transportista_key as integer,",
+						"          transportista_id as integer,",
+						"          razon_social as string,",
+						"          nit as string,",
+						"          municipio as string,",
+						"          contacto as string,",
+						"          telefono as string,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimTransportista",
+						"source(output(",
+						"          vehiculo_key as integer,",
+						"          vehiculo_id as integer,",
+						"          descripcion as string,",
+						"          placa as string,",
+						"          tipo as string,",
+						"          capacidad_kg as decimal(10,2),",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldDimVehiculo",
+						"SilverRecepciones derive(tiempo_key = toInteger(toString(fecha_recepcion, 'yyyyMMdd')),",
+						"          cantidad_recepciones = 1) ~> derivedColumn1",
+						"derivedColumn1, GoldDimAlmacen join(SilverRecepciones@almacen_id == GoldDimAlmacen@almacen_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, GoldDimTransportista join(SilverRecepciones@transportista_id == GoldDimTransportista@transportista_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2, GoldDimVehiculo join(SilverRecepciones@vehiculo_id == GoldDimVehiculo@vehiculo_id,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join3",
+						"join3 derive(cantidad_recibida = toInteger(cantidad_recibida)) ~> derivedColumn2",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          recepcion_key as integer,",
+						"          recepcion_id as integer,",
+						"          tiempo_key as integer,",
+						"          almacen_key as integer,",
+						"          transportista_key as integer,",
+						"          vehiculo_key as integer,",
+						"          lote_produccion as string,",
+						"          cantidad_recibida as integer,",
+						"          temperatura_llegada as decimal(5,2),",
+						"          responsable_recepcion as string,",
+						"          estado_recepcion as string,",
+						"          cantidad_recepciones as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          recepcion_id,",
+						"          tiempo_key,",
+						"          almacen_key,",
+						"          transportista_key,",
+						"          vehiculo_key,",
+						"          lote_produccion = nro_lote,",
+						"          cantidad_recibida,",
+						"          temperatura_llegada,",
+						"          responsable_recepcion = responsable,",
+						"          estado_recepcion = SilverRecepciones@estado,",
+						"          cantidad_recepciones",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/p_cargar_capa_gold')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dim_beneficiaria",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_beneficiaria",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverSegip": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dim_establecimiento",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_establecimiento",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverEstablecimientos": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dim_paquete",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_paquete",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dim_almacen",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_almacen",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dim_vehiculo",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_vehiculo",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dim_transportista",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_transportista",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "fact_boletas",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_fact_boletas",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverBoletas": {},
+									"GoldDimBeneficiaria": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "fact_controles",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_fact_controles",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverControles": {},
+									"GoldDimBeneficiaria": {},
+									"GoldDimEstablecimiento": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "fact_despachos",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_fact_despachos",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverDespachos": {},
+									"GoldDimAlmacen": {},
+									"GoldDimTransportista": {},
+									"GoldDimVehiculo": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "fact_entregas",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_fact_entregas",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverEntregas": {},
+									"GoldDimBeneficiaria": {},
+									"GoldDimPaquete": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "fact_inscripciones",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_fact_inscripciones",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverInscripciones": {},
+									"GoldDimBeneficiaria": {},
+									"GoldDimEstablecimiento": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "fact_recepciones",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_fact_recepciones",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverRecepciones": {},
+									"GoldDimAlmacen": {},
+									"GoldDimTransportista": {},
+									"GoldDimVehiculo": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-06-29T05:27:08Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_beneficiaria')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_establecimiento')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_paquete')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_almacen')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_vehiculo')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_transportista')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_fact_boletas')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_fact_controles')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_fact_despachos')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_fact_entregas')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_fact_inscripciones')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_fact_recepciones')]"
+			]
 		}
 	]
 }

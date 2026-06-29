@@ -13,142 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_as_almacenes')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_azure_sql_dw_dest",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "silver/AS"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "almacen_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "municipio",
-						"type": "varchar"
-					},
-					{
-						"name": "nombre",
-						"type": "varchar"
-					},
-					{
-						"name": "departamento",
-						"type": "varchar"
-					},
-					{
-						"name": "direccion",
-						"type": "varchar"
-					},
-					{
-						"name": "capacidad_m3",
-						"type": "decimal",
-						"precision": 10,
-						"scale": 2
-					},
-					{
-						"name": "estado",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "silver",
-					"table": "as_almacenes"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_as_despachos')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_azure_sql_dw_dest",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "silver/AS"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "despacho_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "recepcion_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "nro_lote",
-						"type": "varchar"
-					},
-					{
-						"name": "almacen_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "transportista_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "vehiculo_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "fecha_despacho",
-						"type": "date"
-					},
-					{
-						"name": "cantidad_despachada",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 2
-					},
-					{
-						"name": "centro_destino",
-						"type": "varchar"
-					},
-					{
-						"name": "estado",
-						"type": "varchar"
-					},
-					{
-						"name": "responsable",
-						"type": "varchar"
-					},
-					{
-						"name": "nro_guia_despacho",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_llegada",
-						"type": "date"
-					}
-				],
-				"typeProperties": {
-					"schema": "silver",
-					"table": "as_despachos"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_as_entregas')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2793,9 +2657,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_as_almacenes')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_as_recepciones')]",
@@ -3086,6 +2948,184 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_sup_boletas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_catalogo_paquetes')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "bronze_to_silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_csv_sup_catalogo_paquetes",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_sup_catalogo_paquetes2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          paquete_id as string,",
+						"          nombre as string,",
+						"          contenido as string,",
+						"          peso_estandar_kg as string,",
+						"          costo_estimado_bs as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive(paquete_id = toInteger(toString(paquete_id)),",
+						"          nombre = trim(nombre),",
+						"          contenido = trim(contenido),",
+						"          peso_estandar_kg = toDecimal(toString(peso_estandar_kg), 10, 2),",
+						"          costo_estimado_bs = toDecimal(costo_estimado_bs, 10, 2),",
+						"          fecha_procesamiento = currentTimestamp()) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          paquete_id as integer,",
+						"          nombre as string,",
+						"          contenido as string,",
+						"          peso_estandar_kg as decimal(10,2),",
+						"          costo_estimado_bs as decimal(10,2),",
+						"          fecha_procesamiento as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          paquete_id,",
+						"          nombre,",
+						"          contenido,",
+						"          peso_estandar_kg,",
+						"          costo_estimado_bs,",
+						"          fecha_procesamiento",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_sup_catalogo_paquetes2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_to_silver_controles')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "bronze_to_silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_bronze_sup_controles",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_sup_controles",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          control_id as string,",
+						"          ci_beneficiaria as string,",
+						"          establecimiento_id as string,",
+						"          nro_control as string,",
+						"          fecha_control as string,",
+						"          semana_gestacion as string,",
+						"          peso_madre_kg as string,",
+						"          presion_arterial as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 derive(control_id = toInteger(control_id),",
+						"          establecimiento_id = toInteger(establecimiento_id),",
+						"          nro_control = toInteger(nro_control),",
+						"          semana_gestacion = toInteger(semana_gestacion),",
+						"          peso_madre_kg = toDecimal(peso_madre_kg, 5, 2),",
+						"          fecha_control = iif(     instr(toString(fecha_control), '-') > 0,     toDate(toString(fecha_control), 'yyyy-MM-dd'),     iif(         toInteger(left(toString(fecha_control),2)) > 12,         toDate(toString(fecha_control), 'dd/MM/yyyy'),         toDate(toString(fecha_control), 'MM/dd/yyyy')     ) ),",
+						"          ci_beneficiaria = upper(     iif(         rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'),         concat(             substring(                 regexReplace(ci_beneficiaria, '[-_]', ''),                 3,                 length(regexReplace(ci_beneficiaria, '[-_]', '')) - 2             ),             '-',             substring(                 regexReplace(ci_beneficiaria, '[-_]', ''),                 1,                 2             )         ),         iif(             rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'),             concat(                 substring(                     regexReplace(ci_beneficiaria, '[-_]', ''),                     1,                     length(regexReplace(ci_beneficiaria, '[-_]', '')) - 2                 ),                 '-',                 right(                     regexReplace(ci_beneficiaria, '[-_]', ''),                     2                 )             ),             regexReplace(ci_beneficiaria, '[-_]', '')         )     ) ),",
+						"          presion_arterial = trim(presion_arterial)) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          control_id as integer,",
+						"          ci_beneficiaria as string,",
+						"          establecimiento_id as integer,",
+						"          nro_control as integer,",
+						"          fecha_control as date,",
+						"          semana_gestacion as integer,",
+						"          peso_madre_kg as decimal(5,2),",
+						"          presion_arterial as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          control_id,",
+						"          ci_beneficiaria,",
+						"          establecimiento_id,",
+						"          nro_control,",
+						"          fecha_control,",
+						"          semana_gestacion,",
+						"          peso_madre_kg,",
+						"          presion_arterial",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_sup_controles')]"
 			]
 		}
 	]

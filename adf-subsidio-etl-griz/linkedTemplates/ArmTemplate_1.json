@@ -444,95 +444,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_boletas')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_azure_sql_dw_dest",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "gold"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "boleta_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "nro_boleta",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_emision",
-						"type": "date"
-					},
-					{
-						"name": "estado",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "gold",
-					"table": "dim_boletas"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_boletas_control')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_azure_sql_dw_dest",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "gold"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "boleta_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "control_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ci_beneficiaria",
-						"type": "varchar"
-					},
-					{
-						"name": "nro_boleta",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_emision",
-						"type": "date"
-					},
-					{
-						"name": "estado",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "gold",
-					"table": "fact_boletas_control"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_fact_despachos')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1186,6 +1097,142 @@
 				"typeProperties": {
 					"schema": "gold",
 					"table": "dim_vehiculo"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_as_almacenes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver/AS"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "almacen_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "municipio",
+						"type": "varchar"
+					},
+					{
+						"name": "nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "departamento",
+						"type": "varchar"
+					},
+					{
+						"name": "direccion",
+						"type": "varchar"
+					},
+					{
+						"name": "capacidad_m3",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "as_almacenes"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_silver_as_despachos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azure_sql_dw_dest",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver/AS"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "despacho_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "recepcion_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nro_lote",
+						"type": "varchar"
+					},
+					{
+						"name": "almacen_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "transportista_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "vehiculo_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_despacho",
+						"type": "date"
+					},
+					{
+						"name": "cantidad_despachada",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "centro_destino",
+						"type": "varchar"
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					},
+					{
+						"name": "responsable",
+						"type": "varchar"
+					},
+					{
+						"name": "nro_guia_despacho",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_llegada",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "as_despachos"
 				}
 			},
 			"dependsOn": []
