@@ -1,0 +1,35 @@
+{
+	"name": "generico_bd_gold",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"NombreTabla": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "paquete_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre_paquete",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": {
+				"value": "@dataset().NombreTabla",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

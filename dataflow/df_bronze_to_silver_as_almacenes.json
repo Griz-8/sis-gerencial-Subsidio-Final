@@ -1,0 +1,79 @@
+{
+	"name": "df_bronze_to_silver_as_almacenes",
+	"properties": {
+		"folder": {
+			"name": "bronze_to_silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_bronze_as_almacenes",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_bronze_as_almacenes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          almacen_id as string,",
+				"          municipio as string,",
+				"          nombre as string,",
+				"          departamento as string,",
+				"          direccion as string,",
+				"          capacidad_m3 as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 derive(nombre = trim(nombre)) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          almacen_id as string,",
+				"          municipio as string,",
+				"          nombre as string,",
+				"          departamento as string,",
+				"          direccion as string,",
+				"          capacidad_m3 as string,",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          almacen_id,",
+				"          municipio,",
+				"          nombre,",
+				"          departamento,",
+				"          direccion,",
+				"          capacidad_m3,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

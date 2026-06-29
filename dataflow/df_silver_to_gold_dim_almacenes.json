@@ -1,0 +1,73 @@
+{
+	"name": "df_silver_to_gold_dim_almacenes",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/dim"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_almacenes",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_almacenes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          almacen_id as integer,",
+				"          municipio as string,",
+				"          nombre as string,",
+				"          departamento as string,",
+				"          direccion as string,",
+				"          capacidad_m3 as decimal(10,2),",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          almacen_id as integer,",
+				"          municipio as string,",
+				"          nombre as string,",
+				"          departamento as string,",
+				"          direccion as string,",
+				"          capacidad_m3 as decimal(10,2),",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          almacen_id,",
+				"          municipio,",
+				"          nombre,",
+				"          departamento,",
+				"          direccion,",
+				"          capacidad_m3,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

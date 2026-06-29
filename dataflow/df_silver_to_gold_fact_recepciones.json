@@ -1,0 +1,83 @@
+{
+	"name": "df_silver_to_gold_fact_recepciones",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/fact"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_recepciones",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_fact_recepciones",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          recepcion_id as integer,",
+				"          nro_lote as string,",
+				"          condicion as string,",
+				"          estado as string,",
+				"          almacen_id as integer,",
+				"          transportista_id as integer,",
+				"          vehiculo_id as integer,",
+				"          fecha_recepcion as date,",
+				"          cantidad_recibida as decimal(18,2),",
+				"          unidad as string,",
+				"          responsable as string,",
+				"          nro_guia_remision as string,",
+				"          temperatura_llegada as decimal(5,2)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          recepcion_id as integer,",
+				"          nro_lote as string,",
+				"          almacen_id as integer,",
+				"          transportista_id as integer,",
+				"          vehiculo_id as integer,",
+				"          fecha_recepcion as date,",
+				"          cantidad_recibida as decimal(18,2),",
+				"          temperatura_llegada as decimal(5,2),",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          recepcion_id,",
+				"          nro_lote,",
+				"          almacen_id,",
+				"          transportista_id,",
+				"          vehiculo_id,",
+				"          fecha_recepcion,",
+				"          cantidad_recibida,",
+				"          temperatura_llegada,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

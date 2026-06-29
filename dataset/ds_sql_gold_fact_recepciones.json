@@ -1,0 +1,65 @@
+{
+	"name": "ds_sql_gold_fact_recepciones",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "recepcion_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nro_lote",
+				"type": "varchar"
+			},
+			{
+				"name": "almacen_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "transportista_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "vehiculo_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "fecha_recepcion",
+				"type": "date"
+			},
+			{
+				"name": "cantidad_recibida",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "temperatura_llegada",
+				"type": "decimal",
+				"precision": 5,
+				"scale": 2
+			},
+			{
+				"name": "estado",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "fact_recepciones"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

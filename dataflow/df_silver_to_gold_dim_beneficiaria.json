@@ -1,0 +1,83 @@
+{
+	"name": "df_silver_to_gold_dim_beneficiaria",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/dim2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_segip",
+						"type": "DatasetReference"
+					},
+					"name": "SilverSegip"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_beneficiarias",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Limpieza"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ci as string,",
+				"          nombres as string,",
+				"          apellido_paterno as string,",
+				"          apellido_materno as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          genero as string,",
+				"          estado_civil as string,",
+				"          municipio as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SilverSegip",
+				"SilverSegip derive(nombre_completo = trim(upper(nombre_completo)),",
+				"          genero = trim(upper(genero)),",
+				"          estado_civil = trim(upper(estado_civil)),",
+				"          municipio = trim(upper(municipio))) ~> Limpieza",
+				"Limpieza sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          beneficiaria_key as integer,",
+				"          ci as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          genero as string,",
+				"          estado_civil as string,",
+				"          municipio as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ci,",
+				"          nombre_completo,",
+				"          fecha_nacimiento,",
+				"          genero,",
+				"          estado_civil,",
+				"          municipio",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

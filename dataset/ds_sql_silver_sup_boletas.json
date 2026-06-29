@@ -5,16 +5,21 @@
 			"referenceName": "ls_azure_sql_dw_dest",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "silver/SUP"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
 			{
 				"name": "boleta_id",
-				"type": "varchar"
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "control_id",
-				"type": "varchar"
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "ci_beneficiaria",
@@ -26,7 +31,7 @@
 			},
 			{
 				"name": "fecha_emision",
-				"type": "varchar"
+				"type": "date"
 			},
 			{
 				"name": "estado",

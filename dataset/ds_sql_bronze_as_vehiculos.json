@@ -1,0 +1,49 @@
+{
+	"name": "ds_sql_bronze_as_vehiculos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze/AS"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "vehiculo_id",
+				"type": "varchar"
+			},
+			{
+				"name": "transportista_id",
+				"type": "varchar"
+			},
+			{
+				"name": "descripcion",
+				"type": "varchar"
+			},
+			{
+				"name": "placa",
+				"type": "varchar"
+			},
+			{
+				"name": "tipo",
+				"type": "varchar"
+			},
+			{
+				"name": "capacidad_kg",
+				"type": "varchar"
+			},
+			{
+				"name": "estado",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": "as_vehiculos"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

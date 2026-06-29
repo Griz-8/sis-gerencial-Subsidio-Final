@@ -1,0 +1,82 @@
+{
+	"name": "df_bronze_to_silver_transportistas",
+	"properties": {
+		"folder": {
+			"name": "bronze_to_silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_bronze_as_transportistas",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_transportistas",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          transportista_id as string,",
+				"          razon_social as string,",
+				"          nit as string,",
+				"          municipio as string,",
+				"          contacto as string,",
+				"          telefono as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 derive(transportista_id = toInteger(transportista_id),",
+				"          razon_social = trim(razon_social),",
+				"          telefono = toString(telefono),",
+				"          estado = upper(trim(estado))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          transportista_id as integer,",
+				"          razon_social as string,",
+				"          nit as string,",
+				"          municipio as string,",
+				"          contacto as string,",
+				"          telefono as string,",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          transportista_id,",
+				"          razon_social,",
+				"          nit,",
+				"          municipio,",
+				"          contacto,",
+				"          telefono,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

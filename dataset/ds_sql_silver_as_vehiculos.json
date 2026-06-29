@@ -1,0 +1,53 @@
+{
+	"name": "ds_sql_silver_as_vehiculos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "silver/AS"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "vehiculo_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "transportista_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "descripcion",
+				"type": "varchar"
+			},
+			{
+				"name": "placa",
+				"type": "varchar"
+			},
+			{
+				"name": "tipo",
+				"type": "varchar"
+			},
+			{
+				"name": "capacidad_kg",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "estado",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "as_vehiculos"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,77 @@
+{
+	"name": "df_silver_to_gold_fact_despachos",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/fact"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_despachos",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_despachos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          despacho_id as integer,",
+				"          recepcion_id as integer,",
+				"          nro_lote as string,",
+				"          almacen_id as integer,",
+				"          transportista_id as integer,",
+				"          vehiculo_id as integer,",
+				"          fecha_despacho as date,",
+				"          cantidad_despachada as integer,",
+				"          centro_destino as string,",
+				"          estado as string,",
+				"          responsable as string,",
+				"          nro_guia_despacho as string,",
+				"          fecha_llegada as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          despacho_id as integer,",
+				"          nro_lote as string,",
+				"          fecha_despacho as date,",
+				"          cantidad_despachada as integer,",
+				"          centro_destino as string,",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          despacho_id,",
+				"          nro_lote,",
+				"          fecha_despacho,",
+				"          cantidad_despachada,",
+				"          centro_destino,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

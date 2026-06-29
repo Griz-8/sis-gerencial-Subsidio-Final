@@ -1,0 +1,57 @@
+{
+	"name": "ds_csv_as_transportistas",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_source_csv_blobs",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "csv/AS"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "as_transportistas.csv",
+				"folderPath": "AS",
+				"container": "subsidio-raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "transportista_id",
+				"type": "String"
+			},
+			{
+				"name": "razon_social",
+				"type": "String"
+			},
+			{
+				"name": "nit",
+				"type": "String"
+			},
+			{
+				"name": "municipio",
+				"type": "String"
+			},
+			{
+				"name": "contacto",
+				"type": "String"
+			},
+			{
+				"name": "telefono",
+				"type": "String"
+			},
+			{
+				"name": "estado",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

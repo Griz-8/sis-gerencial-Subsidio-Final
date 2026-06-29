@@ -5,6 +5,9 @@
 			"referenceName": "ls_source_csv_blobs",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "csv"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {

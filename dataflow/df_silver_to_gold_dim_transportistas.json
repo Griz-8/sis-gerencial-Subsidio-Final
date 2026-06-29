@@ -1,0 +1,69 @@
+{
+	"name": "df_silver_to_gold_dim_transportistas",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/dim"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_transportistas",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_transportistas",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          transportista_id as integer,",
+				"          razon_social as string,",
+				"          nit as string,",
+				"          municipio as string,",
+				"          contacto as string,",
+				"          telefono as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          transportista_id as integer,",
+				"          razon_social as string,",
+				"          nit as string,",
+				"          municipio as string,",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          transportista_id,",
+				"          razon_social,",
+				"          nit,",
+				"          municipio,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,12 +1,15 @@
 {
 	"name": "df_bronze_to_silver_entregas",
 	"properties": {
+		"folder": {
+			"name": "bronze_to_silver"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_csv_sup_entregas",
+						"referenceName": "ds_sql_bronze_sup_entregas",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -24,6 +27,9 @@
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -41,7 +47,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
 				"source1 derive(entrega_id = toInteger(entrega_id),",
 				"          boleta_id = toInteger(boleta_id),",
 				"          ci_beneficiaria = upper(iif(rlike(regexReplace(ci_beneficiaria, '[-_ ]', ''), '^[A-Za-z]{2}\\\\d+'), concat(substring(regexReplace(ci_beneficiaria, '[-_ ]', ''), 3, length(regexReplace(ci_beneficiaria, '[-_ ]', ''))-2), '-', substring(regexReplace(ci_beneficiaria, '[-_ ]', ''), 1, 2)), iif(rlike(regexReplace(ci_beneficiaria, '[-_ ]', ''), '\\\\d+[A-Za-z]{2}$'), concat(substring(regexReplace(ci_beneficiaria, '[-_ ]', ''), 1, length(regexReplace(ci_beneficiaria, '[-_ ]', ''))-2), '-', right(regexReplace(ci_beneficiaria, '[-_ ]', ''), 2)), regexReplace(ci_beneficiaria, '[-_ ]', '')))),",
@@ -52,7 +59,17 @@
 				"          lote_produccion = iif(isNull(lote_produccion) || trim(lote_produccion) == '', 'Sin Lote', upper(trim(lote_produccion))),",
 				"          peso_paquete_kg = iif(isNull(peso_paquete_kg) || trim(peso_paquete_kg) == '', toDecimal(0.0, 10, 2), toDecimal(peso_paquete_kg, 10, 2)),",
 				"          fecha_proxima_entrega = iif(isNull(fecha_proxima_entrega) || trim(fecha_proxima_entrega) == '', toDate(null()), iif(!isNull(toDate(fecha_proxima_entrega, 'yyyy-MM-dd')), toDate(fecha_proxima_entrega, 'yyyy-MM-dd'), iif(!isNull(toDate(fecha_proxima_entrega, 'dd-MM-yyyy')), toDate(fecha_proxima_entrega, 'dd-MM-yyyy'), iif(!isNull(toDate(fecha_proxima_entrega, 'dd/MM/yyyy')), toDate(fecha_proxima_entrega, 'dd/MM/yyyy'), toDate(fecha_proxima_entrega, 'MM/dd/yyyy')))))) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 aggregate(groupBy(entrega_id),",
+				"     boleta_id = first(boleta_id),",
+				"          ci_beneficiaria = first(ci_beneficiaria),",
+				"          establecimiento_id = first(establecimiento_id),",
+				"          paquete_id = first(paquete_id),",
+				"          paquete_nombre = first(paquete_nombre),",
+				"          fecha_entrega = first(fecha_entrega),",
+				"          lote_produccion = first(lote_produccion),",
+				"          peso_paquete_kg = first(peso_paquete_kg),",
+				"          fecha_proxima_entrega = first(fecha_proxima_entrega)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          entrega_id as integer,",
@@ -72,6 +89,7 @@
 				"     upsertable:false,",
 				"     truncate:true,",
 				"     format: 'table',",
+				"     preSQLs:['TRUNCATE TABLE silver.as_entregas;'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",

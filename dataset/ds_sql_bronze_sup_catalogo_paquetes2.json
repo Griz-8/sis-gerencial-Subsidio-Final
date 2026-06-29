@@ -1,0 +1,46 @@
+{
+	"name": "ds_sql_bronze_sup_catalogo_paquetes2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_dw_dest",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze/SUP"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "paquete_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "contenido",
+				"type": "varchar"
+			},
+			{
+				"name": "peso_estandar_kg",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "costo_estimado_bs",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": "sup_catalogo_paquetes"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

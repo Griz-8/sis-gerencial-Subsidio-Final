@@ -1,0 +1,89 @@
+{
+	"name": "df_silver_to_gold_dim_establecimiento",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/dim2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_sup_establecimientos2",
+						"type": "DatasetReference"
+					},
+					"name": "SilverEstablecimientos"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_establecimiento",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          establecimiento_id as integer,",
+				"          codigo_snis as string,",
+				"          nombre as string,",
+				"          tipo as string,",
+				"          nivel_atencion as string,",
+				"          municipio as string,",
+				"          departamento as string,",
+				"          red_salud as string,",
+				"          estado as string,",
+				"          fecha_procesamiento as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SilverEstablecimientos",
+				"SilverEstablecimientos derive(nombre = trim(upper(nombre)),",
+				"          nivel_atencion = trim(upper(nivel_atencion)),",
+				"          red_salud = trim(upper(red_salud)),",
+				"          municipio = trim(upper(municipio)),",
+				"          departamento = trim(upper(departamento)),",
+				"          estado = trim(upper(estado))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          establecimiento_key as integer,",
+				"          establecimiento_id as integer,",
+				"          nombre as string,",
+				"          codigo_snis as string,",
+				"          nivel_atencion as string,",
+				"          red_salud as string,",
+				"          municipio as string,",
+				"          departamento as string,",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          establecimiento_id,",
+				"          nombre,",
+				"          codigo_snis,",
+				"          nivel_atencion,",
+				"          red_salud,",
+				"          municipio,",
+				"          departamento,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,12 +1,15 @@
 {
 	"name": "df_bronze_to_silver_boletas",
 	"properties": {
+		"folder": {
+			"name": "bronze_to_silver"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_csv_sup_boletas",
+						"referenceName": "ds_sql_bronze_sup_boletas",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -24,6 +27,9 @@
 			"transformations": [
 				{
 					"name": "LimpiarDatos"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -37,18 +43,26 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
 				"source1 derive(ci_beneficiaria = upper(     iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'),         concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 3, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, 2)),         iif(rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'),             concat(substring(regexReplace(ci_beneficiaria, '[-_]', ''), 1, length(regexReplace(ci_beneficiaria, '[-_]', ''))-2), '-', right(regexReplace(ci_beneficiaria, '[-_]', ''), 2)),             regexReplace(ci_beneficiaria, '[-_]', '')         )     ) ),",
 				"          estado = initCap(trim(estado)),",
-				"          fecha_emision = toString(     iif(isNull(fecha_emision) || trim(fecha_emision) == '', toDate(null()),          iif(instr(fecha_emision, '/') > 0, toDate(fecha_emision, 'dd/MM/yyyy'),              iif(instr(fecha_emision, '-') == 3, toDate(fecha_emision, 'dd-MM-yyyy'),                  toDate(fecha_emision, 'yyyy-MM-dd')             )         )     ),      'yyyy-MM-dd' )) ~> LimpiarDatos",
-				"LimpiarDatos sink(allowSchemaDrift: true,",
+				"          fecha_emision = iif(isNull(fecha_emision) || trim(toString(fecha_emision)) == '',      toDate(null()),      iif(instr(fecha_emision, '/') > 0, toDate(fecha_emision, 'dd/MM/yyyy'),          iif(instr(fecha_emision, '-') == 3, toDate(fecha_emision, 'dd-MM-yyyy'),              toDate(fecha_emision, 'yyyy-MM-dd')         )     ) ),",
+				"          boleta_id = toInteger(toString(boleta_id))) ~> LimpiarDatos",
+				"LimpiarDatos aggregate(groupBy(boleta_id),",
+				"     control_id = first(boleta_id),",
+				"          ci_beneficiaria = first(ci_beneficiaria),",
+				"          nro_boleta = first(nro_boleta),",
+				"          fecha_emision = first(fecha_emision),",
+				"          estado = first(estado)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          boleta_id as string,",
-				"          control_id as string,",
+				"          boleta_id as integer,",
+				"          control_id as integer,",
 				"          ci_beneficiaria as string,",
 				"          nro_boleta as string,",
-				"          fecha_emision as string,",
+				"          fecha_emision as date,",
 				"          estado as string",
 				"     ),",
 				"     deletable:false,",
@@ -57,6 +71,7 @@
 				"     upsertable:false,",
 				"     truncate:true,",
 				"     format: 'table',",
+				"     preSQLs:['TRUNCATE TABLE silver.sup_boletas;'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",

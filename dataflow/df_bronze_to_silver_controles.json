@@ -1,0 +1,89 @@
+{
+	"name": "df_bronze_to_silver_controles",
+	"properties": {
+		"folder": {
+			"name": "bronze_to_silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_bronze_sup_controles",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_sup_controles",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          control_id as string,",
+				"          ci_beneficiaria as string,",
+				"          establecimiento_id as string,",
+				"          nro_control as string,",
+				"          fecha_control as string,",
+				"          semana_gestacion as string,",
+				"          peso_madre_kg as string,",
+				"          presion_arterial as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 derive(control_id = toInteger(control_id),",
+				"          establecimiento_id = toInteger(establecimiento_id),",
+				"          nro_control = toInteger(nro_control),",
+				"          semana_gestacion = toInteger(semana_gestacion),",
+				"          peso_madre_kg = toDecimal(peso_madre_kg, 5, 2),",
+				"          fecha_control = iif(     instr(toString(fecha_control), '-') > 0,     toDate(toString(fecha_control), 'yyyy-MM-dd'),     iif(         toInteger(left(toString(fecha_control),2)) > 12,         toDate(toString(fecha_control), 'dd/MM/yyyy'),         toDate(toString(fecha_control), 'MM/dd/yyyy')     ) ),",
+				"          ci_beneficiaria = upper(     iif(         rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '^[A-Za-z]{2}\\\\d+'),         concat(             substring(                 regexReplace(ci_beneficiaria, '[-_]', ''),                 3,                 length(regexReplace(ci_beneficiaria, '[-_]', '')) - 2             ),             '-',             substring(                 regexReplace(ci_beneficiaria, '[-_]', ''),                 1,                 2             )         ),         iif(             rlike(regexReplace(ci_beneficiaria, '[-_]', ''), '\\\\d+[A-Za-z]{2}$'),             concat(                 substring(                     regexReplace(ci_beneficiaria, '[-_]', ''),                     1,                     length(regexReplace(ci_beneficiaria, '[-_]', '')) - 2                 ),                 '-',                 right(                     regexReplace(ci_beneficiaria, '[-_]', ''),                     2                 )             ),             regexReplace(ci_beneficiaria, '[-_]', '')         )     ) ),",
+				"          presion_arterial = trim(presion_arterial)) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          control_id as integer,",
+				"          ci_beneficiaria as string,",
+				"          establecimiento_id as integer,",
+				"          nro_control as integer,",
+				"          fecha_control as date,",
+				"          semana_gestacion as integer,",
+				"          peso_madre_kg as decimal(5,2),",
+				"          presion_arterial as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          control_id,",
+				"          ci_beneficiaria,",
+				"          establecimiento_id,",
+				"          nro_control,",
+				"          fecha_control,",
+				"          semana_gestacion,",
+				"          peso_madre_kg,",
+				"          presion_arterial",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

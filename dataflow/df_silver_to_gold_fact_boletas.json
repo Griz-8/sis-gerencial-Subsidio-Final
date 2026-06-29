@@ -1,0 +1,70 @@
+{
+	"name": "df_silver_to_gold_fact_boletas",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/fact"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_sup_boletas",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_fact_boletas",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          boleta_id as integer,",
+				"          control_id as integer,",
+				"          ci_beneficiaria as string,",
+				"          nro_boleta as string,",
+				"          fecha_emision as date,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          boleta_id as integer,",
+				"          control_id as integer,",
+				"          ci_beneficiaria as string,",
+				"          nro_boleta as string,",
+				"          fecha_emision as date,",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          boleta_id,",
+				"          control_id,",
+				"          ci_beneficiaria,",
+				"          nro_boleta,",
+				"          fecha_emision,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

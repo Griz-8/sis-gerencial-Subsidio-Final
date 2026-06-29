@@ -1,0 +1,84 @@
+{
+	"name": "df_silver_to_gold_fact_entregas",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/fact"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_entregas",
+						"type": "DatasetReference"
+					},
+					"name": "SourceEntregas"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_fact_entregas",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          entrega_id as integer,",
+				"          boleta_id as integer,",
+				"          ci_beneficiaria as string,",
+				"          establecimiento_id as integer,",
+				"          paquete_id as integer,",
+				"          paquete_nombre as string,",
+				"          fecha_entrega as date,",
+				"          lote_produccion as string,",
+				"          peso_paquete_kg as decimal(10,2),",
+				"          fecha_proxima_entrega as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceEntregas",
+				"SourceEntregas sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          entrega_id as integer,",
+				"          boleta_id as integer,",
+				"          ci_beneficiaria as string,",
+				"          fecha_entrega as date,",
+				"          fecha_proxima_entrega as date,",
+				"          paquete_nombre as string,",
+				"          establecimiento_id as integer,",
+				"          paquete_id as integer,",
+				"          peso_paquete_kg as decimal(10,2),",
+				"          lote_produccion as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     preSQLs:['TRUNCATE TABLE gold.fact_entregas;'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          entrega_id,",
+				"          boleta_id,",
+				"          ci_beneficiaria,",
+				"          fecha_entrega,",
+				"          fecha_proxima_entrega,",
+				"          paquete_nombre,",
+				"          establecimiento_id,",
+				"          paquete_id,",
+				"          peso_paquete_kg,",
+				"          lote_produccion",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

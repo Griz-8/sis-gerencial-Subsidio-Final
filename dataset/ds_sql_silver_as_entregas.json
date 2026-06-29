@@ -5,6 +5,9 @@
 			"referenceName": "ls_azure_sql_dw_dest",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "silver/AS"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [

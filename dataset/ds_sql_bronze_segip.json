@@ -5,9 +5,49 @@
 			"referenceName": "ls_azure_sql_dw_dest",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "bronze"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "ci",
+				"type": "varchar"
+			},
+			{
+				"name": "nombres",
+				"type": "varchar"
+			},
+			{
+				"name": "apellido_paterno",
+				"type": "varchar"
+			},
+			{
+				"name": "apellido_materno",
+				"type": "varchar"
+			},
+			{
+				"name": "nombre_completo",
+				"type": "varchar"
+			},
+			{
+				"name": "fecha_nacimiento",
+				"type": "varchar"
+			},
+			{
+				"name": "genero",
+				"type": "varchar"
+			},
+			{
+				"name": "estado_civil",
+				"type": "varchar"
+			},
+			{
+				"name": "municipio",
+				"type": "varchar"
+			}
+		],
 		"typeProperties": {
 			"schema": "bronze",
 			"table": "segip"

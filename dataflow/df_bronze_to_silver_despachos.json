@@ -1,12 +1,15 @@
 {
 	"name": "df_bronze_to_silver_despachos",
 	"properties": {
+		"folder": {
+			"name": "bronze_to_silver"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_csv_as_despachos",
+						"referenceName": "ds_sql_bronze_as_despachos",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -47,7 +50,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
 				"source1 derive(despacho_id = toInteger(despacho_id),",
 				"          fecha_despacho = iif(instr(fecha_despacho, '/') > 0, toDate(fecha_despacho, 'dd/MM/yyyy'), iif(instr(fecha_despacho, '-') == 3, toDate(fecha_despacho, 'dd-MM-yyyy'), toDate(fecha_despacho, 'yyyy-MM-dd'))),",
 				"          cantidad_despachada = toInteger(cantidad_despachada),",
@@ -65,11 +69,18 @@
 				"     validateSchema: false,",
 				"     input(",
 				"          despacho_id as integer,",
+				"          recepcion_id as integer,",
 				"          nro_lote as string,",
+				"          almacen_id as integer,",
+				"          transportista_id as integer,",
+				"          vehiculo_id as integer,",
 				"          fecha_despacho as date,",
-				"          cantidad_despachada as integer,",
+				"          cantidad_despachada as decimal(18,2),",
 				"          centro_destino as string,",
-				"          estado as string",
+				"          estado as string,",
+				"          responsable as string,",
+				"          nro_guia_despacho as string,",
+				"          fecha_llegada as date",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",

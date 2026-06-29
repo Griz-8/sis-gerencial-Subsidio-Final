@@ -1,12 +1,15 @@
 {
 	"name": "df_bronze_to_silver_establecimientos",
 	"properties": {
+		"folder": {
+			"name": "bronze_to_silver"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_csv_sup_establecimientos",
+						"referenceName": "ds_sql_bronze_sup_establecimientos2",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -15,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_silver_sup_establecimientos",
+						"referenceName": "ds_sql_silver_sup_establecimientos2",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -28,7 +31,7 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          establecimiento_id as string,",
+				"          establecimiento_id as integer,",
 				"          codigo_snis as string,",
 				"          nombre as string,",
 				"          tipo as string,",
@@ -40,7 +43,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
 				"source1 derive(establecimiento_id = toInteger(toString(establecimiento_id)),",
 				"          codigo_snis = trim(codigo_snis),",
 				"          nombre = trim(nombre),",

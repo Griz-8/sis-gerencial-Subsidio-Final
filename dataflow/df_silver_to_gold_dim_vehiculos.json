@@ -1,0 +1,73 @@
+{
+	"name": "df_silver_to_gold_dim_vehiculos",
+	"properties": {
+		"folder": {
+			"name": "silver_to_gold/dim"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_silver_as_vehiculos",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_gold_vehiculos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          vehiculo_id as integer,",
+				"          transportista_id as integer,",
+				"          descripcion as string,",
+				"          placa as string,",
+				"          tipo as string,",
+				"          capacidad_kg as decimal(10,2),",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          vehiculo_id as integer,",
+				"          transportista_id as integer,",
+				"          descripcion as string,",
+				"          placa as string,",
+				"          tipo as string,",
+				"          capacidad_kg as decimal(10,2),",
+				"          estado as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          vehiculo_id,",
+				"          transportista_id,",
+				"          descripcion,",
+				"          placa,",
+				"          tipo,",
+				"          capacidad_kg,",
+				"          estado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
