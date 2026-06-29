@@ -2297,7 +2297,7 @@
 							{
 								"activity": "dim_beneficiaria",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							}
 						],
@@ -2333,15 +2333,15 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "dim_beneficiaria",
+								"activity": "dim_establecimiento",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "dim_establecimiento",
+								"activity": "dim_beneficiaria",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							}
 						],
@@ -2378,21 +2378,21 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "dim_vehiculo",
+								"activity": "dim_transportista",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							},
 							{
 								"activity": "dim_almacen",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "dim_transportista",
+								"activity": "dim_vehiculo",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							}
 						],
@@ -2430,15 +2430,15 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "dim_paquete",
+								"activity": "dim_beneficiaria",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "dim_beneficiaria",
+								"activity": "dim_paquete",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							}
 						],
@@ -2475,15 +2475,15 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "dim_beneficiaria",
+								"activity": "dim_establecimiento",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							},
 							{
-								"activity": "dim_establecimiento",
+								"activity": "dim_beneficiaria",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							}
 						],
@@ -2520,21 +2520,21 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
+								"activity": "dim_almacen",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
 								"activity": "dim_vehiculo",
 								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							},
 							{
 								"activity": "dim_transportista",
 								"dependencyConditions": [
-									"Skipped"
-								]
-							},
-							{
-								"activity": "dim_almacen",
-								"dependencyConditions": [
-									"Skipped"
+									"Succeeded"
 								]
 							}
 						],
