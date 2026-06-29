@@ -34,7 +34,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_sql_bronze_as_almacenes",
+								"referenceName": "ds_sql_silver_as_almacenes",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -63,12 +63,12 @@
 						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          almacen_id as string,",
+						"          almacen_id as integer,",
 						"          municipio as string,",
 						"          nombre as string,",
 						"          departamento as string,",
 						"          direccion as string,",
-						"          capacidad_m3 as string,",
+						"          capacidad_m3 as decimal(10,2),",
 						"          estado as string",
 						"     ),",
 						"     deletable:false,",
@@ -1281,6 +1281,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -1622,6 +1623,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -1639,12 +1641,12 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_transportistas')]",
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_transportista')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim"
+					"name": "silver_to_gold/dim2"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1660,13 +1662,17 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_sql_gold_transportistas",
+								"referenceName": "ds_sql_gold_transportista",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
 					"scriptLines": [
 						"source(output(",
 						"          transportista_id as integer,",
@@ -1681,13 +1687,20 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
+						"source1 derive(razon_social = trim(upper(razon_social)),",
+						"          municipio = trim(upper(municipio)),",
+						"          contacto = trim(upper(contacto)),",
+						"          estado = trim(upper(estado))) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
+						"          transportista_key as integer,",
 						"          transportista_id as integer,",
 						"          razon_social as string,",
 						"          nit as string,",
 						"          municipio as string,",
+						"          contacto as string,",
+						"          telefono as string,",
 						"          estado as string",
 						"     ),",
 						"     deletable:false,",
@@ -1703,6 +1716,8 @@
 						"          razon_social,",
 						"          nit,",
 						"          municipio,",
+						"          contacto,",
+						"          telefono,",
 						"          estado",
 						"     )) ~> sink1"
 					]
@@ -1711,12 +1726,12 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_vehiculos')]",
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_vehiculo')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim"
+					"name": "silver_to_gold/dim2"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -1732,13 +1747,17 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_sql_gold_vehiculos",
+								"referenceName": "ds_sql_gold_vehiculo",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
 					"scriptLines": [
 						"source(output(",
 						"          vehiculo_id as integer,",
@@ -1753,11 +1772,15 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
+						"source1 derive(descripcion = trim(upper(descripcion)),",
+						"          placa = trim(upper(placa)),",
+						"          tipo = trim(upper(tipo)),",
+						"          estado = trim(upper(estado))) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
+						"          vehiculo_key as integer,",
 						"          vehiculo_id as integer,",
-						"          transportista_id as integer,",
 						"          descripcion as string,",
 						"          placa as string,",
 						"          tipo as string,",
@@ -1774,7 +1797,6 @@
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          vehiculo_id,",
-						"          transportista_id,",
 						"          descripcion,",
 						"          placa,",
 						"          tipo,",

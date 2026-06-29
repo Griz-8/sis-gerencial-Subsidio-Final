@@ -2027,6 +2027,96 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "dim_almacen",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_almacen",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dim_vehiculo",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_vehiculo",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "dim_transportista",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_to_gold_dim_transportista",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -2038,7 +2128,10 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_beneficiaria')]",
 				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_establecimiento')]",
-				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_paquete')]"
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_paquete')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_almacen')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_vehiculo')]",
+				"[concat(variables('factoryId'), '/dataflows/df_silver_to_gold_dim_transportista')]"
 			]
 		},
 		{
@@ -4694,7 +4787,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_transportistas')]",
+			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_transportista')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4703,11 +4796,16 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/dim"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "transportista_key",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "transportista_id",
 						"type": "int",
@@ -4726,13 +4824,21 @@
 						"type": "varchar"
 					},
 					{
+						"name": "contacto",
+						"type": "varchar"
+					},
+					{
+						"name": "telefono",
+						"type": "varchar"
+					},
+					{
 						"name": "estado",
 						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "gold",
-					"table": "dim_transportistas"
+					"table": "dim_transportista"
 				}
 			},
 			"dependsOn": [
@@ -4740,7 +4846,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_vehiculos')]",
+			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_vehiculo')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4749,18 +4855,18 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/dim"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "vehiculo_id",
+						"name": "vehiculo_key",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "transportista_id",
+						"name": "vehiculo_id",
 						"type": "int",
 						"precision": 10
 					},
@@ -4789,7 +4895,7 @@
 				],
 				"typeProperties": {
 					"schema": "gold",
-					"table": "dim_vehiculos"
+					"table": "dim_vehiculo"
 				}
 			},
 			"dependsOn": [
@@ -5794,7 +5900,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_sql_bronze_as_almacenes",
+								"referenceName": "ds_sql_silver_as_almacenes",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -5823,12 +5929,12 @@
 						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          almacen_id as string,",
+						"          almacen_id as integer,",
 						"          municipio as string,",
 						"          nombre as string,",
 						"          departamento as string,",
 						"          direccion as string,",
-						"          capacidad_m3 as string,",
+						"          capacidad_m3 as decimal(10,2),",
 						"          estado as string",
 						"     ),",
 						"     deletable:false,",
@@ -5853,7 +5959,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_as_almacenes')]"
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_as_almacenes')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_as_almacenes')]"
 			]
 		},
 		{
@@ -7079,6 +7186,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -7432,6 +7540,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -7452,12 +7561,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_transportistas')]",
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_transportista')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim"
+					"name": "silver_to_gold/dim2"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -7473,13 +7582,17 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_sql_gold_transportistas",
+								"referenceName": "ds_sql_gold_transportista",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
 					"scriptLines": [
 						"source(output(",
 						"          transportista_id as integer,",
@@ -7494,13 +7607,20 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
+						"source1 derive(razon_social = trim(upper(razon_social)),",
+						"          municipio = trim(upper(municipio)),",
+						"          contacto = trim(upper(contacto)),",
+						"          estado = trim(upper(estado))) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
+						"          transportista_key as integer,",
 						"          transportista_id as integer,",
 						"          razon_social as string,",
 						"          nit as string,",
 						"          municipio as string,",
+						"          contacto as string,",
+						"          telefono as string,",
 						"          estado as string",
 						"     ),",
 						"     deletable:false,",
@@ -7516,6 +7636,8 @@
 						"          razon_social,",
 						"          nit,",
 						"          municipio,",
+						"          contacto,",
+						"          telefono,",
 						"          estado",
 						"     )) ~> sink1"
 					]
@@ -7523,16 +7645,16 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_as_transportistas')]",
-				"[concat(variables('factoryId'), '/datasets/ds_sql_gold_transportistas')]"
+				"[concat(variables('factoryId'), '/datasets/ds_sql_gold_transportista')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_vehiculos')]",
+			"name": "[concat(parameters('factoryName'), '/df_silver_to_gold_dim_vehiculo')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "silver_to_gold/dim"
+					"name": "silver_to_gold/dim2"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -7548,13 +7670,17 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_sql_gold_vehiculos",
+								"referenceName": "ds_sql_gold_vehiculo",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
 					"scriptLines": [
 						"source(output(",
 						"          vehiculo_id as integer,",
@@ -7569,11 +7695,15 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
+						"source1 derive(descripcion = trim(upper(descripcion)),",
+						"          placa = trim(upper(placa)),",
+						"          tipo = trim(upper(tipo)),",
+						"          estado = trim(upper(estado))) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
+						"          vehiculo_key as integer,",
 						"          vehiculo_id as integer,",
-						"          transportista_id as integer,",
 						"          descripcion as string,",
 						"          placa as string,",
 						"          tipo as string,",
@@ -7590,7 +7720,6 @@
 						"     errorHandlingOption: 'stopOnFirstError',",
 						"     mapColumn(",
 						"          vehiculo_id,",
-						"          transportista_id,",
 						"          descripcion,",
 						"          placa,",
 						"          tipo,",
@@ -7602,7 +7731,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_sql_silver_as_vehiculos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_sql_gold_vehiculos')]"
+				"[concat(variables('factoryId'), '/datasets/ds_sql_gold_vehiculo')]"
 			]
 		},
 		{

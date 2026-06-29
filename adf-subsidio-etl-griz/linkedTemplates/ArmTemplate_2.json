@@ -13,7 +13,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_transportistas')]",
+			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_transportista')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -22,11 +22,16 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/dim"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
+					{
+						"name": "transportista_key",
+						"type": "int",
+						"precision": 10
+					},
 					{
 						"name": "transportista_id",
 						"type": "int",
@@ -45,19 +50,27 @@
 						"type": "varchar"
 					},
 					{
+						"name": "contacto",
+						"type": "varchar"
+					},
+					{
+						"name": "telefono",
+						"type": "varchar"
+					},
+					{
 						"name": "estado",
 						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "gold",
-					"table": "dim_transportistas"
+					"table": "dim_transportista"
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_vehiculos')]",
+			"name": "[concat(parameters('factoryName'), '/ds_sql_gold_vehiculo')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -66,18 +79,18 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "gold"
+					"name": "gold/dim"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "vehiculo_id",
+						"name": "vehiculo_key",
 						"type": "int",
 						"precision": 10
 					},
 					{
-						"name": "transportista_id",
+						"name": "vehiculo_id",
 						"type": "int",
 						"precision": 10
 					},
@@ -106,7 +119,7 @@
 				],
 				"typeProperties": {
 					"schema": "gold",
-					"table": "dim_vehiculos"
+					"table": "dim_vehiculo"
 				}
 			},
 			"dependsOn": []
