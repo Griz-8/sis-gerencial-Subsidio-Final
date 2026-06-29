@@ -2,7 +2,7 @@
 	"name": "df_silver_to_gold_fact_despachos",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/fact2"
+			"name": "silver_to_gold/fact"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
