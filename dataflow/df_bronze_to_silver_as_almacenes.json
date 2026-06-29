@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_bronze_as_almacenes",
+						"referenceName": "ds_sql_silver_as_almacenes",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -47,12 +47,12 @@
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          almacen_id as string,",
+				"          almacen_id as integer,",
 				"          municipio as string,",
 				"          nombre as string,",
 				"          departamento as string,",
 				"          direccion as string,",
-				"          capacidad_m3 as string,",
+				"          capacidad_m3 as decimal(10,2),",
 				"          estado as string",
 				"     ),",
 				"     deletable:false,",
