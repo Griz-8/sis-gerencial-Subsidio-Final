@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_gold_beneficiarias",
+						"referenceName": "ds_sql_gold_beneficiaria",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"

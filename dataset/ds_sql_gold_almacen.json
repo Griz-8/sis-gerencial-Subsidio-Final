@@ -1,27 +1,32 @@
 {
-	"name": "ds_sql_gold_almacenes",
+	"name": "ds_sql_gold_almacen",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_azure_sql_dw_dest",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "gold"
+			"name": "gold/dim"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
+			{
+				"name": "almacen_key",
+				"type": "int",
+				"precision": 10
+			},
 			{
 				"name": "almacen_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "municipio",
+				"name": "nombre",
 				"type": "varchar"
 			},
 			{
-				"name": "nombre",
+				"name": "municipio",
 				"type": "varchar"
 			},
 			{
@@ -45,7 +50,7 @@
 		],
 		"typeProperties": {
 			"schema": "gold",
-			"table": "dim_almacenes"
+			"table": "dim_almacen"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"

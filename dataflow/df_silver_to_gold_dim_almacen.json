@@ -1,8 +1,8 @@
 {
-	"name": "df_silver_to_gold_dim_almacenes",
+	"name": "df_silver_to_gold_dim_almacen",
 	"properties": {
 		"folder": {
-			"name": "silver_to_gold/dim"
+			"name": "silver_to_gold/dim2"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -18,13 +18,17 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_sql_gold_almacenes",
+						"referenceName": "ds_sql_gold_almacen",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          almacen_id as integer,",
@@ -39,12 +43,18 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 derive(nombre = trim(upper(nombre)),",
+				"          municipio = trim(upper(municipio)),",
+				"          departamento = trim(upper(departamento)),",
+				"          direccion = trim(upper(direccion)),",
+				"          estado = trim(upper(estado))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
+				"          almacen_key as integer,",
 				"          almacen_id as integer,",
-				"          municipio as string,",
 				"          nombre as string,",
+				"          municipio as string,",
 				"          departamento as string,",
 				"          direccion as string,",
 				"          capacidad_m3 as decimal(10,2),",
@@ -60,8 +70,8 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          almacen_id,",
-				"          municipio,",
 				"          nombre,",
+				"          municipio,",
 				"          departamento,",
 				"          direccion,",
 				"          capacidad_m3,",
